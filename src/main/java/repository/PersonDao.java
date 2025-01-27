@@ -13,7 +13,7 @@ public class PersonDao {
 
     private PreparedStatement prst = null;
 
-    public Person getPerson(int personId) throws SQLException {
+    public Person get(int personId) throws SQLException {
         prst = DbConn.i().prepareStatement(
                 "SELECT id, name, birth_year FROM lab_persons "
         + "WHERE id = ?");
@@ -31,21 +31,38 @@ public class PersonDao {
         return person;
     }
 
-    public List<Person> getAllPersons() throws SQLException {
+    public List<Person> getAll() {
         List<Person> persons = new ArrayList<Person>();
-        prst = DbConn.i().prepareStatement(
-                "SELECT id, name, birth_year FROM lab_persons"
-        );
-        prst.executeQuery();
-        ResultSet rs = prst.getResultSet();
-        while(rs.next()) {
-            int id = rs.getInt("id");
-            int birthYear = rs.getInt("birth_year");
-            String name = rs.getString("name");
-            Person person = new Person(id, name, birthYear);
-            persons.add(person);
+        try {
+            prst = DbConn.i().prepareStatement(
+                    "SELECT id, name, birth_year FROM lab_persons"
+            );
+            prst.executeQuery();
+            ResultSet rs = prst.getResultSet();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int birthYear = rs.getInt("birth_year");
+                String name = rs.getString("name");
+                Person person = new Person(id, name, birthYear);
+                persons.add(person);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return persons;
     }
+
+    public void updateName(int id, String name) {
+        try {
+            prst = DbConn.i().prepareStatement(
+                    "UPDATE lab_persons SET name = ? WHERE id = ?"
+            );
+            prst.setString(1, name);
+            prst.setInt(2, id);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
 }

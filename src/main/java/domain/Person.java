@@ -1,19 +1,18 @@
 package domain;
 
-import repository.PersonDao;
-
-import java.sql.SQLException;
-
 public class Person {
 
     private String name;
-    private int id;
-    private int birthYear;
+    private final int id;
+    private final int birthYear;
 
     public Person(int id, String name, int birthYear) {
-        setId(id);
-        this.name = name;
+        if (id < 1) {
+            throw new IllegalArgumentException("Id cannot be negative");
+        }
+        this.id = id;
         this.birthYear = birthYear;
+        setName(name);
     }
 
     public Person(String name, int birthYear) {
@@ -25,13 +24,6 @@ public class Person {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         this.name = name;
-    }
-
-    private void setId(int id) {
-        if (id < 0) {
-            throw new IllegalArgumentException("Id cannot be negative");
-        }
-        this.id = id;
     }
 
     public int getBirthYear() {
@@ -46,8 +38,9 @@ public class Person {
         return name;
     }
 
+    @Override
     public String toString() {
-        return String.format("Name: %s, Birth Year: %d", name, birthYear);
+        return String.format("ID: %d, Name: %s, Birth Year: %d", id, name, birthYear);
     }
 
 }

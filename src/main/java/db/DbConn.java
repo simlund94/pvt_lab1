@@ -49,13 +49,12 @@ public class DbConn {
         return statement;
     }
 
-
     public ResultSet executeQuery(String sqlString) throws SQLException {
         return this.getStatement(this.getConnection()).executeQuery(sqlString);
     }
 
     public PreparedStatement prepareStatement(String statementString) throws SQLException {
-        return this.getConnection().prepareStatement(statementString);
+        return this.getConnection().prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS);
     }
 
     public void close() {
