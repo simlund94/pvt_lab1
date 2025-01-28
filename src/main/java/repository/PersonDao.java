@@ -71,6 +71,12 @@ public class PersonDao implements Dao<Person> {
 
     @Override
     public Person delete(Person toDelete) {
+        try {
+            prst = DbConn.i().prepareStatement("DELETE FROM lab_persons WHERE id = ?");
+            prst.setInt(1, toDelete.getId());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         return null;
     }
 
@@ -95,7 +101,5 @@ public class PersonDao implements Dao<Person> {
         }
         return persons;
     }
-
-
 
 }
