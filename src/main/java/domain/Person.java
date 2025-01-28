@@ -7,7 +7,7 @@ public class Person {
     private final int birthYear;
 
     public Person(int id, String name, int birthYear) {
-        if (id < 1) {
+        if (id < 0) {
             throw new IllegalArgumentException("Id cannot be negative");
         }
         this.id = id;

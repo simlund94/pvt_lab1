@@ -37,13 +37,36 @@ public class PersonDao implements Dao<Person> {
     }
 
     @Override
-    public Person save(int id) {
-        return null;
+    public Person save(Person person) {
+        Person personSaved = null;
+        try {
+            prst = DbConn.i().prepareStatement("INSERT INTO lab_persons(name, birth_year) VALUES(?, ?)");
+            prst.setString(1, person.getName());
+            prst.setInt(2, person.getBirthYear());
+            prst.executeUpdate();
+            ResultSet rs = prst.getGeneratedKeys();
+
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                personSaved = new Person(id, person.getName(), person.getBirthYear());
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return personSaved;
     }
 
     @Override
     public Person update(Person toUpdate) {
-        return null;
+        try {
+            prst = DbConn.i().prepareStatement("UPDATE lab_persons SET name = ? WHERE id = ?");
+            prst.setString(1, toUpdate.getName());
+            prst.setInt(2, toUpdate.getId());
+            prst.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return toUpdate;
     }
 
     @Override
@@ -73,17 +96,6 @@ public class PersonDao implements Dao<Person> {
         return persons;
     }
 
-    public void updateName(int id, String name) {
-        try {
-            prst = DbConn.i().prepareStatement(
-                    "UPDATE lab_persons SET name = ? WHERE id = ?"
-            );
-            prst.setString(1, name);
-            prst.setInt(2, id);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
 
 
 }

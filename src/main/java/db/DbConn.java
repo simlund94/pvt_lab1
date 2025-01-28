@@ -53,7 +53,8 @@ public class DbConn {
         return this.getStatement(this.getConnection()).executeQuery(sqlString);
     }
 
-    public PreparedStatement prepareStatement(String statementString) throws SQLException {
+    public PreparedStatement prepareStatement(String statementString)
+            throws SQLException {
         return this.getConnection().prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS);
     }
 
