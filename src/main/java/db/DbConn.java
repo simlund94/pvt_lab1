@@ -15,7 +15,6 @@ public class DbConn {
     private static final String CONNECTION_URL = "jdbc:mysql://node96052-mysql.jls-sto3.elastx.net:11107/"
             + DB_NAME;
 
-
     private DbConn() {
     }
 
@@ -70,7 +69,5 @@ public class DbConn {
             System.err.println(e.getMessage());
         }
     }
-
-
 
 }
