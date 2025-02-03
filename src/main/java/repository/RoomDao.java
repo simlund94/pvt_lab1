@@ -60,7 +60,13 @@ public class RoomDao implements Dao<Room> {
             prst.setString(1, room.getDescription());
             prst.setInt(2, room.getId());
             int affectedRows = prst.executeUpdate();
-            if (affectedRows == 1) {
+            int expectedAffectedRows = 1;
+
+            // Om databasen returnerar 1 påverkad rad så lyckades uppdateringen.
+            // Om databasen returnerar 0 så misslyckades det.
+            // Om databasen returnerar något annat så har något gått åt skogen, då id ska identifiera
+            // en unik tupel i tabellen, och därmed misslyckats.
+            if (affectedRows == expectedAffectedRows) {
                 return true;
             }
         } catch (SQLException e) {
@@ -82,7 +88,9 @@ public class RoomDao implements Dao<Room> {
             prst = DbConn.i().prepareStatement(query);
             prst.setInt(1, room.getId());
             int affectedRows = prst.executeUpdate();
-            if (affectedRows == 1) {
+            int expectedAffectedRows = 1;
+
+            if (affectedRows == expectedAffectedRows) {
                 return true;
             }
         } catch (SQLException e) {

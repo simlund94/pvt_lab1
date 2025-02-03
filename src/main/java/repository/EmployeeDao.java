@@ -87,7 +87,13 @@ public class EmployeeDao implements Dao<Employee> {
             prst.setString(1, employee.getName());
             prst.setInt(2, employee.getId());
             int affectedRows = prst.executeUpdate();
-            if (affectedRows == 1) {
+            int expectedAffectedRows = 1;
+
+            // Om databasen returnerar 1 påverkad rad så lyckades uppdateringen.
+            // Om databasen returnerar 0 rader så misslyckades det.
+            // Om databasen returnerar något annat så har något gått åt skogen, då id ska identifiera
+            // en unik tupel i tabellen.
+            if (affectedRows == expectedAffectedRows) {
                 return true;
             }
         } catch (SQLException e) {
