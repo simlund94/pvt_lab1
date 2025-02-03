@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * A DAO class for retrieving and persisting Employee records in the database.
+ */
 public class EmployeeDao implements Dao<Employee> {
 
     private PreparedStatement prst = null;
