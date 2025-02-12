@@ -1,5 +1,7 @@
 package domain;
 
+import java.time.LocalDateTime;
+
 /**
  * A class representing an employee, for the purpose of a cleaning management system.
  *
@@ -38,6 +40,11 @@ public class Employee {
             throw new IllegalArgumentException("Id cannot be negative");
         }
         this.id = id;
+
+        LocalDateTime now = LocalDateTime.now();
+        if (birthYear < 1900 || birthYear > now.getYear()) {
+            throw new IllegalArgumentException("Birth year must be between 1900 and the current year");
+        }
         this.birthYear = birthYear;
         setName(name);
     }
