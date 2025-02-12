@@ -3,11 +3,11 @@ package service.room;
 import domain.Room;
 import repository.RoomDao;
 
-public class GetRoomById {
+public class GetRoomByIdService {
 
     private int id;
 
-    public GetRoomById(int id) {
+    public GetRoomByIdService(int id) {
         this.id = id;
     }
 

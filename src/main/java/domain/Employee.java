@@ -43,7 +43,7 @@ public class Employee {
 
         LocalDateTime now = LocalDateTime.now();
         if (birthYear < 1900 || birthYear > now.getYear()) {
-            throw new IllegalArgumentException("Birth year must be between 1900 and the current year");
+            throw new IllegalArgumentException("Birth year must be between 1900 and " + now.getYear());
         }
         this.birthYear = birthYear;
         setName(name);
