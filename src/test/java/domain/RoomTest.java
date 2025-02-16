@@ -11,9 +11,10 @@ class RoomTest {
     Room roomWithId;
     Room roomWithoutId;
 
-    final String roomDescription = "Arkiv";
-    final int id = 1;
-    final double sizeInSqm = 50.0;
+    final String validRoomDescription = "Arkiv";
+    final int validId = 1;
+    final double validSize = 50.0;
+    final int validSiteId = 1;
 
     final String tooLongDescription = "A very long and unnecessary description of a room that is unnecessary";
     final int noId = 0;
@@ -23,8 +24,8 @@ class RoomTest {
 
     @BeforeEach
     void setUp() {
-        roomWithId = new Room(id, sizeInSqm, roomDescription);
-        roomWithoutId = new Room(sizeInSqm, roomDescription);
+        roomWithId = new Room(validId, validSize, validRoomDescription, validSiteId);
+        roomWithoutId = new Room(validSize, validRoomDescription);
     }
 
     @AfterEach
@@ -36,9 +37,9 @@ class RoomTest {
     @Test
     void getId() {
         assertEquals(
-                id,
+                validId,
                 roomWithId.getId(),
-                "Room id should be " + id
+                "Room validId should be " + validId
         );
     }
 
@@ -47,13 +48,13 @@ class RoomTest {
         assertEquals(
                 noId,
                 roomWithoutId.getId(),
-                "Rooms created with the non-id constructor should have an id of 0 representing no id");
+                "Rooms created with the non-validId constructor should have an validId of 0 representing no validId");
     }
 
     @Test
     void getSize() {
         assertEquals(
-                sizeInSqm,
+                validSize,
                 roomWithId.getSizeInSqm(),
                 "Expected room size 50.0, but it was " + roomWithId.getSizeInSqm()
         );
@@ -62,9 +63,9 @@ class RoomTest {
     @Test
     void getDescription() {
         assertEquals(
-                roomDescription,
+                validRoomDescription,
                 roomWithId.getDescription(),
-                String.format("Expected room with description: '%s', but got '%s'", roomDescription, roomWithId.getDescription())
+                String.format("Expected room with description: '%s', but got '%s'", validRoomDescription, roomWithId.getDescription())
         );
     }
 
@@ -72,8 +73,8 @@ class RoomTest {
     void createRoomWithNegativeId() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Room(negativeId, sizeInSqm, roomDescription),
-                "Creating a room with a negative id should throw an exception"
+                () -> new Room(negativeId, validSize, validRoomDescription, validSiteId),
+                "Creating a room with a negative validId should throw an exception"
         );
     }
 
@@ -81,7 +82,7 @@ class RoomTest {
     void createRoomWithNegativeSize() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Room(id, negativeSize, roomDescription),
+                () -> new Room(validId, negativeSize, validRoomDescription, validSiteId),
                 "Creating a room with a negative size should throw an exception"
         );
     }
@@ -90,7 +91,7 @@ class RoomTest {
     void createRoomWithNullDescription() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Room(id, sizeInSqm, null),
+                () -> new Room(validId, validSize, null, validSiteId),
                 "Creating a room with a null description should throw an exception"
         );
     }
@@ -99,7 +100,7 @@ class RoomTest {
     void createRoomWithEmptyDescription() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Room(id, sizeInSqm, emptyDescription),
+                () -> new Room(validId, validSize, emptyDescription, validSiteId),
                 "Creating a room with an empty description should throw an exception"
         );
     }
@@ -110,6 +111,25 @@ class RoomTest {
                 IllegalArgumentException.class,
                 () -> roomWithId.setDescription(tooLongDescription),
                 "A description longer than 50 characters should throw an exception"
+        );
+    }
+
+    @Test
+    void createRoomWithValidSiteId() {
+        assertEquals(validSiteId, roomWithId.getSiteId(), "The site validId should be " + validSiteId);
+    }
+
+    @Test
+    void createRoomWithNoSiteId() {
+        assertEquals(noId, roomWithoutId.getSiteId(), "The site validId with no validId should be " + noId);
+    }
+
+    @Test
+    void createRoomWithNegativeSiteId() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Room(validId, validSize, validRoomDescription, negativeId),
+                "A negative site validId shoulw throw an exception"
         );
     }
 }

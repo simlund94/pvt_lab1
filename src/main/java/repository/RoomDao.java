@@ -33,11 +33,12 @@ public class RoomDao implements Dao<Room> {
             prst = DbConn.i().prepareStatement(query);
             prst.setDouble(1, room.getSizeInSqm());
             prst.setString(2, room.getDescription());
+            prst.setInt(3, room.getSiteId());
             prst.executeUpdate();
             ResultSet rs = prst.getGeneratedKeys();
             if (rs.next()) {
                 int newId = rs.getInt(1);
-                roomSaved = new Room(newId, room.getSizeInSqm(), room.getDescription());
+                roomSaved = new Room(newId, room.getSizeInSqm(), room.getDescription(), room.getSiteId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -109,7 +110,7 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public Room get(int id) {
-        String query = "SELECT id, size_in_sqm, description FROM lab_rooms WHERE id = ?";
+        String query = "SELECT id, size_in_sqm, description, siteId FROM lab_rooms WHERE id = ?";
         Room room = null;
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -119,7 +120,8 @@ public class RoomDao implements Dao<Room> {
                 int fetchedId = rs.getInt("id");
                 double sizeInSqm = rs.getDouble("size_in_sqm");
                 String description = rs.getString("description");
-                room = new Room(fetchedId, sizeInSqm, description);
+                int siteId = rs.getInt("site_id");
+                room = new Room(fetchedId, sizeInSqm, description, siteId);
             } else {
                 String errorMessage = String.format("A room with ID: %d does not exist in the database!", id);
                 throw new NoSuchElementException(errorMessage);
@@ -137,7 +139,7 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public List<Room> getAll() {
-        String query = "SELECT id, size_in_sqm, description FROM lab_rooms";
+        String query = "SELECT id, size_in_sqm, description, siteId FROM lab_rooms";
         List<Room> rooms = new ArrayList<>();
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -146,11 +148,32 @@ public class RoomDao implements Dao<Room> {
                 int id = rs.getInt("id");
                 double sizeInSqm = rs.getDouble("size_in_sqm");
                 String description = rs.getString("description");
-                rooms.add(new Room(id, sizeInSqm, description));
+                int siteId = rs.getInt("siteId");
+                rooms.add(new Room(id, sizeInSqm, description, siteId));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return rooms;
+    }
+
+    public List<Room> getAllRoomsOnSite(int siteId) {
+        String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE site_id = ?";
+        List<Room> roomsOnSite = new ArrayList<>();
+        try {
+            prst = DbConn.i().prepareStatement(query);
+            prst.setInt(1, siteId);
+            prst.executeQuery();
+            ResultSet rs = prst.getResultSet();
+            while (rs.next()) {
+                int roomId = rs.getInt("id");
+                double sizeInSqm = rs.getDouble("size_in_sqm");
+                String description = rs.getString("description");
+                roomsOnSite.add(new Room(roomId, sizeInSqm, description, siteId));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roomsOnSite;
     }
 }

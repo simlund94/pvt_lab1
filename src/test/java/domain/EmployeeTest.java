@@ -17,7 +17,7 @@ class EmployeeTest {
     final int lowInvalidBirthYear = 1899;
     final int highInvalidBirthYear = 2100;
     final int negativeId = -1;
-    String tooLongName = "Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Gustavus Gundalf";
+    String tooLongName = "Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Gustavus Gundalf Son Of Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Gustavus Gundalf";
     String emptyName = "";
 
     @BeforeEach
@@ -34,7 +34,7 @@ class EmployeeTest {
 
     @Test
     void getId() {
-        assertEquals(id, employeeWithId.getId(), "Employee id should be " + id);
+        assertEquals(id, employeeWithId.getId(), "Employee validId should be " + id);
     }
 
     @Test
@@ -42,7 +42,7 @@ class EmployeeTest {
         assertEquals(
                 0,
                 employeeWithoutId.getId(),
-                "An employee created with the non-id constructor should have an id of 0, representing no id."
+                "An employee created with the non-validId constructor should have an validId of 0, representing no validId."
         );
     }
 
@@ -77,7 +77,7 @@ class EmployeeTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> employeeWithId.setName(tooLongName),
-                "Setting a name over 50 characters should throw an exception."
+                "Setting a name over 100 characters should throw an exception."
         );
     }
 
@@ -102,7 +102,7 @@ class EmployeeTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Employee(negativeId, name, birthYear),
-                "The employee constructor should throw an exception when passed a negative id"
+                "The employee constructor should throw an exception when passed a negative validId"
         );
     }
 }

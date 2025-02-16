@@ -25,6 +25,13 @@ public class Room {
     private String description;
 
     /**
+     * Id of the site which the room is associated with, immutable.
+     */
+    private final int siteId;
+
+    private static int NO_ID = 0;
+
+    /**
      * Constructor used to create a Room object with a given id.
      *
      * @param id          The rooms unique identifier, a non-negative integer
@@ -33,11 +40,16 @@ public class Room {
      * @throws IllegalArgumentException If {@code id} is negative, {@code size} is negative or {@code description}
      *                                  is invalid.
      */
-    public Room(int id, double sizeInSqm, String description) {
+    public Room(int id, double sizeInSqm, String description, int siteId) {
         if (id < 0) {
             throw new IllegalArgumentException("Id must be a positive integer");
         }
         this.id = id;
+
+        if (siteId < 0) {
+            throw new IllegalArgumentException("Site Id must be a positive integer");
+        }
+        this.siteId = siteId;
 
         if (sizeInSqm < 0) {
             throw new IllegalArgumentException("Size cannot be a negative number");
@@ -57,7 +69,11 @@ public class Room {
      *                                  is invalid.
      */
     public Room(double sizeInSqm, String description) {
-        this(0, sizeInSqm, description);
+        this(NO_ID, sizeInSqm, description, NO_ID);
+    }
+
+    public Room(double sizeInSqm, String description, int siteId) {
+        this(NO_ID, sizeInSqm, description, siteId);
     }
 
     /**
@@ -87,12 +103,17 @@ public class Room {
         return id;
     }
 
+    public int getSiteId() {
+        return siteId;
+    }
+
     /**
      * Description of the object and its state, only for demo and debugging.
      */
     @Override
     public String toString() {
-        return String.format("ID: %d, Description: \"%s\", Size: %.2f sqm",
-                this.id, this.description, this.sizeInSqm);
+        return String.format("ID: %d, Description: \"%s\", Size: %.2f sqm, Site ID: %d",
+                this.id, this.description, this.sizeInSqm, this.siteId);
     }
+
 }
