@@ -157,6 +157,12 @@ public class RoomDao implements Dao<Room> {
         return rooms;
     }
 
+    /**
+     * Retrieves all rooms records that have the matching Site id foreign key in the database.
+     *
+     * @param siteId The site id
+     * @return A List of Room objects associated with the site of the passed id.
+     */
     public List<Room> getAllRoomsOnSite(int siteId) {
         String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE site_id = ?";
         List<Room> roomsOnSite = new ArrayList<>();

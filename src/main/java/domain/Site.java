@@ -4,7 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class representing a physical site to perform cleaning work at.
+ * A class representing a physical site to perform cleaning work at, for the purpose of a cleaning management
+ * system.
+ *
+ * <p>This class provides basic fields for a site's name, address and property designation, as well as database id,
+ * meant to represent a real estate or property. It also provides a list of {@code Room}, that are associated
+ * with this site. The Room list should only be injected in retrieval from the database to ensure proper foreign key matches.
+ * When insertion into the database, the room list should be empty.</p>
+ *
+ * <p>All fields except the name have their setters set to private, as they are not expected to change after instantiation or
+ * insertion into the database. </p>
  */
 public class Site {
 
@@ -17,6 +26,10 @@ public class Site {
 
     private List<Room> rooms;
 
+    /**
+     * A Site object created using the non-id constructor (before insertion into a database) will receive
+     * this id as default.
+     */
     private static int NO_ID = 0;
 
     /**
@@ -48,7 +61,8 @@ public class Site {
     }
 
     /**
-     * Constructor for creating a site object for insertion into a database, where an id will be generated.
+     * Constructor for creating a site object for insertion into a database, where an id will be generated. The list
+     * of rooms is set to null.
      *
      * @param name                The name of the site, optional
      * @param address             The address of the site, non-null, max 100 characters
