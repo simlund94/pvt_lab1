@@ -97,4 +97,16 @@ public class Employee {
         return String.format("ID: %d, Name: %s, Birth Year: %d", id, name, birthYear);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof Employee)) return false;
+        if (this == o) return true;
+
+        Employee that = (Employee) o;
+        return this.id == that.id &&
+                this.birthYear == that.birthYear &&
+                this.name.equals(that.name);
+    }
+
 }

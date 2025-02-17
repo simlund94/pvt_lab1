@@ -5,10 +5,17 @@ import repository.RoomDao;
 
 public class GetRoomByIdService {
 
-    private int id;
+    private final int id;
+
+    private final RoomDao roomDao;
+
+    public GetRoomByIdService(int id, RoomDao roomDao) {
+        this.id = id;
+        this.roomDao = roomDao;
+    }
 
     public GetRoomByIdService(int id) {
-        this.id = id;
+        this(id, new RoomDao());
     }
 
     public Room execute() {

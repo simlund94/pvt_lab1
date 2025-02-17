@@ -7,11 +7,18 @@ public class GetEmployeeByIdService {
 
     private final int id;
 
-    public GetEmployeeByIdService(int id) {
+    private final EmployeeDao employeeDao;
+
+    public GetEmployeeByIdService(int id, EmployeeDao employeeDao) {
         this.id = id;
+        this.employeeDao = employeeDao;
+    }
+
+    public GetEmployeeByIdService(int id) {
+        this(id, new EmployeeDao());
     }
 
     public Employee execute() {
-        return new EmployeeDao().get(this.id);
+        return employeeDao.get(id);
     }
 }

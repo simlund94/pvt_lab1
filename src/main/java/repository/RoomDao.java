@@ -2,6 +2,7 @@ package repository;
 
 import db.DbConn;
 import domain.Room;
+import domain.Site;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -181,5 +182,9 @@ public class RoomDao implements Dao<Room> {
             e.printStackTrace();
         }
         return roomsOnSite;
+    }
+
+    public List<Room> getAllRoomsOnSite(Site site) {
+        return getAllRoomsOnSite(site.getId());
     }
 }

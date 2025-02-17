@@ -7,7 +7,17 @@ import java.util.List;
 
 public class GetAllRoomsService {
 
+    private final RoomDao roomDao;
+
+    public GetAllRoomsService(RoomDao roomDao) {
+        this.roomDao = roomDao;
+    }
+
+    public GetAllRoomsService() {
+        this(new RoomDao());
+    }
+
     public List<Room> execute() {
-        return new RoomDao().getAll();
+        return roomDao.getAll();
     }
 }

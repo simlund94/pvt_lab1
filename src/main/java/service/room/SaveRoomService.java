@@ -7,12 +7,19 @@ public class SaveRoomService {
 
     private final Room room;
 
-    public SaveRoomService(Room room) {
+    private final RoomDao roomDao;
+
+    public SaveRoomService(Room room, RoomDao roomDao) {
         this.room = room;
+        this.roomDao = roomDao;
+    }
+
+    public SaveRoomService(Room room) {
+        this(room, new RoomDao());
     }
 
     public Room execute() {
-        return new RoomDao().save(this.room);
+        return roomDao.save(room);
     }
 
 }

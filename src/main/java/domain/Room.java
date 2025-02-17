@@ -116,4 +116,12 @@ public class Room {
                 this.id, this.description, this.sizeInSqm, this.siteId);
     }
 
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        return false;
+    }
+
 }

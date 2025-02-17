@@ -7,11 +7,18 @@ public class SaveEmployeeService {
 
     private final Employee employee;
 
-    public SaveEmployeeService(Employee employee) {
+    private final EmployeeDao employeeDao;
+
+    public SaveEmployeeService(Employee employee, EmployeeDao employeeDao) {
         this.employee = employee;
+        this.employeeDao = employeeDao;
+    }
+
+    public SaveEmployeeService(Employee employee) {
+        this(employee, new EmployeeDao());
     }
 
     public Employee execute() {
-        return new EmployeeDao().save(this.employee);
+        return employeeDao.save(employee);
     }
 }
