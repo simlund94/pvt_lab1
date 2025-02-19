@@ -2,6 +2,7 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A class representing a physical site to perform cleaning work at, for the purpose of a cleaning management
@@ -30,7 +31,7 @@ public class Site {
      * A Site object created using the non-id constructor (before insertion into a database) will receive
      * this id as default.
      */
-    private static int NO_ID = 0;
+    private static final int NO_ID = 0;
 
     /**
      * Constructor for retrieving a site record from the database with a generated id.
@@ -88,7 +89,7 @@ public class Site {
 
     public void setName(String name) {
         if (name == null || name.isEmpty()) {
-            this.name = "No name";
+            this.name = null;
         } else if (name.length() > 100) {
             throw new IllegalArgumentException("Name cannot be longer than 100 characters!");
         } else {
@@ -170,9 +171,31 @@ public class Site {
         return rooms;
     }
 
+    @Override
     public String toString() {
         return String.format("ID: %d, Name: %s, Address: %s, Postal Code: %s, Postal Area: %s, Property Designation: %s, Rooms: %d",
                 getId(), getName(), getAddress(), getPostalCode(), getPostalArea(), getPropertyDesignation(), getRooms().size());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (o.getClass() != this.getClass()) return false;
+
+        Site that = (Site) o;
+        return this.id == that.getId() &&
+                this.name.equals(that.getName()) &&
+                this.address.equals(that.getAddress()) &&
+                this.postalCode == that.getPostalCode() &&
+                this.postalArea.equals(that.getPostalArea()) &&
+                this.propertyDesignation.equals(that.getPropertyDesignation());
+    }
+
+    @Override
+    public int hashCode() {
+        // rooms field excluded from hash computation to avoid issues with potential lazy init later
+        return Objects.hash(id, name, address, postalCode, postalArea, propertyDesignation);
     }
 
 }

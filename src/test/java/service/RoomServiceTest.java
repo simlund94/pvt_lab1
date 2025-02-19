@@ -11,7 +11,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RoomServiceTest {
 
@@ -40,7 +41,7 @@ public class RoomServiceTest {
         assertTrue(result instanceof List<Room>);
         assertEquals(1, result.size());
         assertTrue(result.get(0) instanceof Room);
-        assertEquals(room, result.get(0));
+        assertEquals(room, result.getFirst());
 
     }
 

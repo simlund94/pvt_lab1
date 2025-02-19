@@ -1,6 +1,7 @@
 package domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * A class representing an employee, for the purpose of a cleaning management system.
@@ -27,7 +28,7 @@ public class Employee {
      */
     private final int birthYear;
 
-    private static int NO_ID = 0;
+    private static final int NO_ID = 0;
 
     /**
      * Constructor for creating an employee object with a given id.
@@ -43,9 +44,9 @@ public class Employee {
         }
         this.id = id;
 
-        LocalDateTime now = LocalDateTime.now();
-        if (birthYear < 1900 || birthYear > now.getYear()) {
-            throw new IllegalArgumentException("Birth year must be between 1900 and " + now.getYear());
+        int currentYear = LocalDateTime.now().getYear();
+        if (birthYear < 1900 || birthYear > currentYear) {
+            throw new IllegalArgumentException("Birth year must be between 1900 and " + currentYear);
         }
         this.birthYear = birthYear;
         setName(name);
@@ -100,13 +101,18 @@ public class Employee {
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
-        if (!(o instanceof Employee)) return false;
+        if (getClass() != o.getClass()) return false;
         if (this == o) return true;
 
         Employee that = (Employee) o;
-        return this.id == that.id &&
-                this.birthYear == that.birthYear &&
-                this.name.equals(that.name);
+        return this.id == that.getId() &&
+                this.birthYear == that.getBirthYear() &&
+                this.name.equals(that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, birthYear);
     }
 
 }

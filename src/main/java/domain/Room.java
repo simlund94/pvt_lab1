@@ -1,5 +1,7 @@
 package domain;
 
+import java.util.Objects;
+
 /**
  * A class representing a room or a locale, for the purpose of a cleaning management system.
  *
@@ -29,7 +31,7 @@ public class Room {
      */
     private final int siteId;
 
-    private static int NO_ID = 0;
+    private static final int NO_ID = 0;
 
     /**
      * Constructor used to create a Room object with a given id.
@@ -117,11 +119,22 @@ public class Room {
     }
 
     @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        }
-        return false;
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        if (o == this) return true;
+
+        Room that = (Room) o;
+        double epsilon = 1e-9; // threshold value for comparing doubles
+        return this.id == that.getId() &&
+                this.description.equals(that.getDescription()) &&
+                (Math.abs(this.sizeInSqm - that.getSizeInSqm()) < epsilon) &&
+                this.siteId == that.getSiteId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, description, sizeInSqm, siteId);
     }
 
 }

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RoomTest {
 
     Room roomWithId;
+    Room roomWithIdTwin;
     Room roomWithoutId;
 
     final String validRoomDescription = "Arkiv";
@@ -25,12 +26,14 @@ class RoomTest {
     @BeforeEach
     void setUp() {
         roomWithId = new Room(validId, validSize, validRoomDescription, validSiteId);
+        roomWithIdTwin = new Room(validId, validSize, validRoomDescription, validSiteId);
         roomWithoutId = new Room(validSize, validRoomDescription);
     }
 
     @AfterEach
     void tearDown() {
         roomWithId = null;
+        roomWithIdTwin = null;
         roomWithoutId = null;
     }
 
@@ -52,7 +55,7 @@ class RoomTest {
     }
 
     @Test
-    void getSize() {
+    void getSizeShouldReturnValidSize() {
         assertEquals(
                 validSize,
                 roomWithId.getSizeInSqm(),
@@ -61,7 +64,7 @@ class RoomTest {
     }
 
     @Test
-    void getDescription() {
+    void getDescriptionShouldReturnValidDescription() {
         assertEquals(
                 validRoomDescription,
                 roomWithId.getDescription(),
@@ -131,5 +134,44 @@ class RoomTest {
                 () -> new Room(validId, validSize, validRoomDescription, negativeId),
                 "A negative site validId shoulw throw an exception"
         );
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenRoomsAreEqual() {
+        assertEquals(roomWithId, roomWithIdTwin,
+                "Two semantically identical rooms should return true from equals()");
+        assertEquals(roomWithIdTwin, roomWithId,
+                "The equals() method should be transitive");
+        assertEquals(roomWithId, roomWithId,
+                "The equals() method should be reflexive");
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenRoomsAreUnequal() {
+        assertNotEquals(roomWithId, roomWithoutId,
+                "Two rooms which are not semantically identical should return false from equals()");
+        assertNotEquals(roomWithId, tooLongDescription,
+                "Should not be equal when compared to another object");
+        assertNotEquals(roomWithId, null,
+                "Should not be equal when compared to a null value");
+    }
+
+    @Test
+    void hashCodeShouldBeEqualForTwoIdenticalEmployees() {
+        assertEquals(roomWithId.hashCode(), roomWithIdTwin.hashCode(),
+                "Hash code should be equal for two identical rooms");
+    }
+
+    @Test
+    void hashCodeShouldBeConsistent() {
+        int initialHashCode = roomWithId.hashCode();
+        assertEquals(initialHashCode, roomWithId.hashCode(), "Hashcode should be consistent");
+        assertEquals(initialHashCode, roomWithId.hashCode(), "Hashcode should be consistent");
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentForTwoDifferentRooms() {
+        assertNotEquals(roomWithId.hashCode(), roomWithoutId.hashCode(),
+                "Hashcode for two different rooms should not be the same");
     }
 }

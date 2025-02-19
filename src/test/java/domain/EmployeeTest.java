@@ -4,18 +4,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EmployeeTest {
     Employee employeeWithId;
     Employee employeeWithoutId;
+    Employee employeeWithIdTwin;
 
     final String name = "Simon";
     final int id = 32;
     final int birthYear = 1994;
 
     final int lowInvalidBirthYear = 1899;
-    final int highInvalidBirthYear = 2100;
+    final int highInvalidBirthYear = LocalDateTime.now().getYear() + 1;
     final int negativeId = -1;
     String tooLongName = "Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Gustavus Gundalf Son Of Hubert Blaine Wolfeschlegelsteinhausenbergerdorff Gustavus Gundalf";
     String emptyName = "";
@@ -24,16 +27,18 @@ class EmployeeTest {
     void setUp() {
         employeeWithId = new Employee(id, name, birthYear);
         employeeWithoutId = new Employee(name, birthYear);
+        employeeWithIdTwin  = new Employee(id, name, birthYear);
     }
 
     @AfterEach
     void tearDown() {
         employeeWithId = null;
         employeeWithoutId = null;
+        employeeWithIdTwin = null;
     }
 
     @Test
-    void getId() {
+    void getIdShouldReturnValidId() {
         assertEquals(id, employeeWithId.getId(), "Employee validId should be " + id);
     }
 
@@ -47,12 +52,12 @@ class EmployeeTest {
     }
 
     @Test
-    void getName() {
+    void getNameShouldReturnValidName() {
         assertEquals(name, employeeWithId.getName(), "Employee name should be " + name);
     }
 
     @Test
-    void getBirthYear() {
+    void getBirthYearShouldReturnValidBirthYear() {
         assertEquals(birthYear, employeeWithId.getBirthYear(), "Birth year should be " + birthYear);
     }
 
@@ -104,5 +109,44 @@ class EmployeeTest {
                 () -> new Employee(negativeId, name, birthYear),
                 "The employee constructor should throw an exception when passed a negative validId"
         );
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenEmployeesAreEqual() {
+        assertEquals(employeeWithId, employeeWithIdTwin,
+                "Two semantically identical employees should return true from equals()");
+        assertEquals(employeeWithIdTwin, employeeWithId,
+                "The equals() method should be transitive");
+        assertEquals(employeeWithId, employeeWithId,
+                "The equals() method should be reflexive");
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenEmployeesAreUnequal() {
+        assertNotEquals(employeeWithId, employeeWithoutId,
+                "Two employees who are not semantically identical should return false from equals()");
+        assertNotEquals(employeeWithId, emptyName,
+                "Should not be equal when compared to another object");
+        assertNotEquals(employeeWithId, null,
+                "Should not be equal when compared to a null value");
+    }
+
+    @Test
+    void hashCodeShouldBeEqualForTwoIdenticalEmployees() {
+        assertEquals(employeeWithId.hashCode(), employeeWithIdTwin.hashCode(),
+                "Hash code should be equal for two identical employees");
+    }
+
+    @Test
+    void hashCodeShouldBeConsistent() {
+        int initialHashCode = employeeWithId.hashCode();
+        assertEquals(initialHashCode, employeeWithId.hashCode(), "Hashcode should be consistent");
+        assertEquals(initialHashCode, employeeWithId.hashCode(), "Hashcode should be consistent");
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentForTwoDifferentEmployees() {
+        assertNotEquals(employeeWithId.hashCode(), employeeWithoutId.hashCode(),
+                "Hashcode for two different employees should not be the same");
     }
 }

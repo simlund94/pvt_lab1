@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SiteTest {
 
     Site siteWithId;
+    Site siteWithIdTwin;
     Site siteWithoutId;
 
     final int validId = 1;
@@ -24,7 +25,6 @@ class SiteTest {
     final List<Room> listOfRooms = List.of(new Room(50.0, "Description"));
 
     final int negativeId = -1;
-    final String defaultName = "No name";
     final String stringOver100Characters = "Högskolan i Gävle som ligger i Gävle bredvid kullen och vid Gavleån fast det är rätt " +
             "så nära boulougnerskogen också jag hoppas detta är långt nog nu.";
     final String emptyString = "";
@@ -35,13 +35,15 @@ class SiteTest {
     @BeforeEach
     void setUp() {
         siteWithId = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfRooms);
+        siteWithIdTwin = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfRooms);
         siteWithoutId = new Site(validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation);
     }
 
     @AfterEach
     void tearDown() {
-        siteWithoutId = null;
         siteWithId = null;
+        siteWithIdTwin = null;
+        siteWithoutId = null;
     }
 
     @Test
@@ -72,15 +74,13 @@ class SiteTest {
     @Test
     void setNullName() {
         siteWithId.setName(null);
-        assertEquals(defaultName, siteWithId.getName(),
-                "Setting a name to null should set the default name");
+        assertNull(siteWithId.getName(), "Setting a name to null should be legal");
     }
 
     @Test
     void setEmptyName() {
         siteWithId.setName(emptyString);
-        assertEquals(defaultName, siteWithId.getName(),
-                "Setting a name to an empty string should set the default name");
+        assertNull(siteWithId.getName(), "Setting a name to an empty string should set null");
     }
 
     @Test
@@ -218,7 +218,43 @@ class SiteTest {
         assertEquals(emptyList, siteToTest.getRooms(), "Passing null into the room-list field should create an empty list");
     }
 
+    @Test
+    void equalsShouldReturnTrueWhenSitesAreEqual() {
+        assertEquals(siteWithId, siteWithIdTwin,
+                "Two semantically identical sites should return true from equals()");
+        assertEquals(siteWithIdTwin, siteWithId,
+                "The equals() method should be transitive");
+        assertEquals(siteWithId, siteWithId,
+                "The equals() method should be reflexive");
+    }
 
+    @Test
+    void equalsShouldReturnFalseWhenSitesAreUnequal() {
+        assertNotEquals(siteWithId, siteWithoutId,
+                "Two sites which are not semantically identical should return false from equals()");
+        assertNotEquals(siteWithId, validName,
+                "Should not be equal when compared to another object");
+        assertNotEquals(siteWithId, null,
+                "Should not be equal when compared to a null value");
+    }
 
+    @Test
+    void hashCodeShouldBeEqualForTwoIdenticalSites() {
+        assertEquals(siteWithId.hashCode(), siteWithIdTwin.hashCode(),
+                "Hash code should be equal for two identical sites");
+    }
+
+    @Test
+    void hashCodeShouldBeConsistent() {
+        int initialHashCode = siteWithId.hashCode();
+        assertEquals(initialHashCode, siteWithId.hashCode(), "Hashcode should be consistent");
+        assertEquals(initialHashCode, siteWithId.hashCode(), "Hashcode should be consistent");
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentForTwoDifferentSites() {
+        assertNotEquals(siteWithId.hashCode(), siteWithoutId.hashCode(),
+                "Hashcode for two different sites should not be the same");
+    }
 
 }
