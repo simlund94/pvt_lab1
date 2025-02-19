@@ -15,6 +15,8 @@ import java.util.Objects;
  *
  * <p>All fields except the name have their setters set to private, as they are not expected to change after instantiation or
  * insertion into the database. </p>
+ *
+ * @author Simon Lundgren
  */
 public class Site {
 

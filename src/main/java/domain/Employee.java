@@ -9,6 +9,8 @@ import java.util.Objects;
  * <p>This class provides basic fields for an employee, like name, a unique identifier and a birth year.
  * The fields {@code id} and {@code birthYear} are immutable, while {@code name} can be altered after
  * instantiation.</p>
+ *
+ * @author Simon Lundgren
  */
 public class Employee {
 

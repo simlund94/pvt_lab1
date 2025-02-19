@@ -6,6 +6,7 @@ import java.util.List;
  * An interface for DAO classes to streamline the most common DAO operations.
  *
  * @param <T> The type of object which the DAO class should handle.
+ * @author Simon Lundgren
  */
 public interface Dao<T> {
 

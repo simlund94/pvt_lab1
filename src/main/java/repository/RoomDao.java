@@ -13,6 +13,8 @@ import java.util.NoSuchElementException;
 
 /**
  * A DAO-class for retrieving and persisting room records in the database.
+ *
+ * @author Simon Lundgren
  */
 public class RoomDao implements Dao<Room> {
 
@@ -28,7 +30,7 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public Room save(Room room) {
-        String query = "INSERT INTO lab_rooms(size_in_sqm, description) VALUES(?, ?)";
+        String query = "INSERT INTO lab_rooms(size_in_sqm, description, siteId) VALUES(?, ?, ?)";
         Room roomSaved = null;
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -165,7 +167,7 @@ public class RoomDao implements Dao<Room> {
      * @return A List of Room objects associated with the site of the passed id.
      */
     public List<Room> getAllRoomsOnSite(int siteId) {
-        String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE site_id = ?";
+        String query = "SELECT id, size_in_sqm, description, FROM lab_rooms WHERE site_id = ?";
         List<Room> roomsOnSite = new ArrayList<>();
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -184,6 +186,12 @@ public class RoomDao implements Dao<Room> {
         return roomsOnSite;
     }
 
+    /**
+     * Retrieves all room records that belong to the passed site in the database.
+     *
+     * @param site The site of the rooms
+     * @return A List of room objects associated with the site.
+     */
     public List<Room> getAllRoomsOnSite(Site site) {
         return getAllRoomsOnSite(site.getId());
     }

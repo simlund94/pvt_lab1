@@ -7,6 +7,8 @@ import java.util.Objects;
  *
  * <p> This class provides basic fields like id, size in square meters and a short textual description.
  * The fields {@code id} and {@code size} are immutable, while {@code description} can be modified after instantiation.
+ *
+ * @author Simon Lundgren
  */
 public class Room {
 

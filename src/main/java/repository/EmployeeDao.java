@@ -12,6 +12,8 @@ import java.util.NoSuchElementException;
 
 /**
  * A DAO class for retrieving and persisting Employee records in the database.
+ *
+ * @author Simon Lundgren
  */
 public class EmployeeDao implements Dao<Employee> {
 

@@ -13,6 +13,8 @@ import java.util.NoSuchElementException;
 
 /**
  * A DAO class for retrieving and persisting Site records in the database.
+ *
+ * @author Simon Lundgren
  */
 public class SiteDao implements Dao<Site> {
 

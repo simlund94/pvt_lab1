@@ -3,7 +3,9 @@ package db;
 import java.sql.*;
 
 /**
- * Database connection singleton, modified from Åke Wallin version.
+ * Database connection singleton, modified from Åke Wallins version.
+ *
+ * @author Simon Lundgren
  */
 public class DbConn {
 
