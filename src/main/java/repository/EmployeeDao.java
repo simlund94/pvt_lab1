@@ -19,6 +19,15 @@ public class EmployeeDao implements Dao<Employee> {
 
     private PreparedStatement prst = null;
 
+    private DbConn dbConn;
+
+    public EmployeeDao(DbConn dbConn) {
+        this.dbConn = dbConn;
+    }
+
+    public EmployeeDao() {
+    }
+
     /**
      * Retrieves an employee record from the database table that matches the passed id.
      * Throws an exception if no employee with that id is present in the database.
@@ -29,6 +38,10 @@ public class EmployeeDao implements Dao<Employee> {
      */
     @Override
     public Employee get(int employeeId) {
+        if (employeeId <= 0) {
+            throw new IllegalArgumentException("employeeId must be greater than 0");
+        }
+
         String query = "SELECT id, name, birth_year FROM lab_employees WHERE id = ?";
         Employee employee = null;
         try {

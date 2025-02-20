@@ -3,6 +3,12 @@ package service.employee;
 import domain.Employee;
 import repository.EmployeeDao;
 
+/**
+ *
+ * @author Simon Lundgren
+ * @version 1.0
+ * Created 2025-02-20
+ */
 public class SaveEmployeeService {
 
     private final Employee employee;
@@ -10,6 +16,9 @@ public class SaveEmployeeService {
     private final EmployeeDao employeeDao;
 
     public SaveEmployeeService(Employee employee, EmployeeDao employeeDao) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
         this.employee = employee;
         this.employeeDao = employeeDao;
     }
