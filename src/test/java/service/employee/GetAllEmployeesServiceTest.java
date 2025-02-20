@@ -20,22 +20,20 @@ class GetAllEmployeesServiceTest {
 
     List<Employee> employees;
 
+    EmployeeDao employeeDaoMock;
+
     @BeforeEach
     void setUp() {
         employees = List.of(
                 new Employee(1, "Görgen Antonsson", 1971),
                 new Employee(2, "Niklas Andersson", 1991));
-    }
 
-    @AfterEach
-    void tearDown() {
-        employees = null;
+        employeeDaoMock = mock(EmployeeDao.class);
+        when(employeeDaoMock.getAll()).thenReturn(employees);
     }
 
     @Test
     void getAllEmployees() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
-        when(employeeDaoMock.getAll()).thenReturn(employees);
         GetAllEmployeesService instance = new GetAllEmployeesService(employeeDaoMock);
         List<Employee> result = instance.execute();
 

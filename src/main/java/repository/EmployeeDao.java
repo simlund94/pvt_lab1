@@ -45,7 +45,7 @@ public class EmployeeDao implements Dao<Employee> {
         String query = "SELECT id, name, birth_year FROM lab_employees WHERE id = ?";
         Employee employee = null;
         try {
-            prst = DbConn.i().prepareStatement(query);
+            prst = dbConn.prepareStatement(query);
             prst.setInt(1, employeeId);
             prst.executeQuery();
             ResultSet rs = prst.getResultSet();
@@ -73,10 +73,14 @@ public class EmployeeDao implements Dao<Employee> {
      */
     @Override
     public Employee save(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Cannot save a null employee");
+        }
+
         String query = "INSERT INTO lab_employees(name, birth_year) VALUES(?, ?)";
         Employee employeeSaved = null;
         try {
-            prst = DbConn.i().prepareStatement(query);
+            prst = dbConn.prepareStatement(query);
             prst.setString(1, employee.getName());
             prst.setInt(2, employee.getBirthYear());
             prst.executeUpdate();
@@ -99,9 +103,13 @@ public class EmployeeDao implements Dao<Employee> {
      */
     @Override
     public boolean update(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Cannot update a null employee.");
+        }
+
         String query = "UPDATE lab_employees SET name = ? WHERE id = ?";
         try {
-            prst = DbConn.i().prepareStatement(query);
+            prst = dbConn.prepareStatement(query);
             prst.setString(1, employee.getName());
             prst.setInt(2, employee.getId());
             int affectedRows = prst.executeUpdate();
@@ -128,9 +136,13 @@ public class EmployeeDao implements Dao<Employee> {
      */
     @Override
     public boolean delete(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Cannot delete a null employee");
+        }
+
         String query = "DELETE FROM lab_employees WHERE id = ?";
         try {
-            prst = DbConn.i().prepareStatement(query);
+            prst = dbConn.prepareStatement(query);
             prst.setInt(1, employee.getId());
             int affectedRows = prst.executeUpdate();
             if (affectedRows == 1) {
@@ -151,7 +163,7 @@ public class EmployeeDao implements Dao<Employee> {
     public List<Employee> getAll() {
         List<Employee> employees = new ArrayList<Employee>();
         try {
-            prst = DbConn.i().prepareStatement(
+            prst = dbConn.prepareStatement(
                     "SELECT id, name, birth_year FROM lab_employees"
             );
             prst.executeQuery();
