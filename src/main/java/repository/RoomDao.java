@@ -30,7 +30,15 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public Room save(Room room) {
-        String query = "INSERT INTO lab_rooms(size_in_sqm, description, siteId) VALUES(?, ?, ?)";
+        if (room == null) {
+            throw new IllegalArgumentException("Room cannot be null");
+        }
+        if (!new SiteDao().checkIfSiteExists(room.getSiteId())) {
+            String error = String.format("No site with the id %d exists in the database", room.getSiteId());
+            throw new IllegalArgumentException(error);
+        }
+
+        String query = "INSERT INTO lab_rooms(size_in_sqm, description, site_id) VALUES(?, ?, ?)";
         Room roomSaved = null;
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -58,6 +66,10 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public boolean update(Room room) {
+        if (room == null) {
+            throw new IllegalArgumentException("Room cannot be null");
+        }
+
         String query = "UPDATE lab_rooms SET description = ? WHERE id = ?";
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -87,6 +99,10 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public boolean delete(Room room) {
+        if (room == null) {
+            throw new IllegalArgumentException("Room cannot be null");
+        }
+
         String query = "DELETE FROM lab_rooms WHERE id = ?";
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -113,7 +129,11 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public Room get(int id) {
-        String query = "SELECT id, size_in_sqm, description, siteId FROM lab_rooms WHERE id = ?";
+        if (id <= 0) {
+            throw new IllegalArgumentException("The room id cannot be zero or negative");
+        }
+
+        String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE id = ?";
         Room room = null;
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -142,7 +162,7 @@ public class RoomDao implements Dao<Room> {
      */
     @Override
     public List<Room> getAll() {
-        String query = "SELECT id, size_in_sqm, description, siteId FROM lab_rooms";
+        String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms";
         List<Room> rooms = new ArrayList<>();
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -151,7 +171,7 @@ public class RoomDao implements Dao<Room> {
                 int id = rs.getInt("id");
                 double sizeInSqm = rs.getDouble("size_in_sqm");
                 String description = rs.getString("description");
-                int siteId = rs.getInt("siteId");
+                int siteId = rs.getInt("site_id");
                 rooms.add(new Room(id, sizeInSqm, description, siteId));
             }
         } catch (SQLException e) {
@@ -167,7 +187,11 @@ public class RoomDao implements Dao<Room> {
      * @return A List of Room objects associated with the site of the passed id.
      */
     public List<Room> getAllRoomsOnSite(int siteId) {
-        String query = "SELECT id, size_in_sqm, description, FROM lab_rooms WHERE site_id = ?";
+        if (siteId <= 0) {
+            throw new IllegalArgumentException("SiteId cannot be zero or negative");
+        }
+
+        String query = "SELECT id, size_in_sqm, description FROM lab_rooms WHERE site_id = ?";
         List<Room> roomsOnSite = new ArrayList<>();
         try {
             prst = DbConn.i().prepareStatement(query);
@@ -193,6 +217,9 @@ public class RoomDao implements Dao<Room> {
      * @return A List of room objects associated with the site.
      */
     public List<Room> getAllRoomsOnSite(Site site) {
+        if (site == null) {
+            throw new IllegalArgumentException("Site cannot be null");
+        }
         return getAllRoomsOnSite(site.getId());
     }
 }

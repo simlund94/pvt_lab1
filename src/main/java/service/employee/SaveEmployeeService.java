@@ -4,10 +4,10 @@ import domain.Employee;
 import repository.EmployeeDao;
 
 /**
+ * A command class that encapsulates a request to save an employee to the database.
  *
  * @author Simon Lundgren
  * @version 1.0
- * Created 2025-02-20
  */
 public class SaveEmployeeService {
 
@@ -18,6 +18,9 @@ public class SaveEmployeeService {
     public SaveEmployeeService(Employee employee, EmployeeDao employeeDao) {
         if (employee == null) {
             throw new IllegalArgumentException("Employee cannot be null");
+        }
+        if (employeeDao == null) {
+            throw new IllegalArgumentException("EmployeeDAO cannot be null");
         }
         this.employee = employee;
         this.employeeDao = employeeDao;

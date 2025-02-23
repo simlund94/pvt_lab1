@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
+ * Mocked unit test suite for the GetEmployeeByIdService command class.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created 2025-02-20
@@ -20,19 +22,22 @@ class GetEmployeeByIdServiceTest {
 
     Employee employeeToTest;
 
+    EmployeeDao employeeDaoMock;
+
     @BeforeEach
     void setUp() {
         employeeToTest = new Employee(1, "Simon Lundgren", 1994);
+        employeeDaoMock = mock(EmployeeDao.class);
     }
 
     @AfterEach
     void tearDown() {
         employeeToTest = null;
+        employeeDaoMock = null;
     }
 
     @Test
     void getEmployeeByValidId() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
         when(employeeDaoMock.get(1)).thenReturn(employeeToTest);
         GetEmployeeByIdService service = new GetEmployeeByIdService(1, employeeDaoMock);
         Employee result = service.execute();
@@ -44,8 +49,7 @@ class GetEmployeeByIdServiceTest {
     }
 
     @Test
-    void getNonExistingEmployeeShouldThrowException() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
+    void getNonExistingEmployee_ShouldThrowException() {
         when(employeeDaoMock.get(2)).thenThrow(NoSuchElementException.class);
         GetEmployeeByIdService service = new GetEmployeeByIdService(2, employeeDaoMock);
 
@@ -59,8 +63,7 @@ class GetEmployeeByIdServiceTest {
     }
 
     @Test
-    void getEmployeeWithNonValidIdShouldThrowException() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
+    void getEmployeeWithNonValidId_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new GetEmployeeByIdService(-1, employeeDaoMock),

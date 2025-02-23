@@ -8,6 +8,12 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test suite for the Employee class.
+ *
+ * @author Simon Lundgren
+ * @version 1.0
+ */
 class EmployeeTest {
     Employee employeeWithId;
     Employee employeeWithoutId;

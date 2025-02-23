@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A DAO class for retrieving and persisting Employee records in the database.
@@ -26,6 +27,7 @@ public class EmployeeDao implements Dao<Employee> {
     }
 
     public EmployeeDao() {
+        dbConn = DbConn.i();
     }
 
     /**

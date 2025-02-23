@@ -6,6 +6,12 @@ import service.room.*;
 
 import java.util.List;
 
+/**
+ * Demo program to demonstrate service layer programs that interact primarily with Room
+ *
+ * @author Simon Lundgren
+ * @version 1.0
+ */
 public class SpikeRoom {
 
     public static void main(String[] args) {
@@ -14,7 +20,7 @@ public class SpikeRoom {
         System.out.println(room1);
 
         // Save room
-        Room room2 = new Room(50.0, "A room");
+        Room room2 = new Room(50.0, "A room", 1);
         room2 = new SaveRoomService(room2).execute();
         System.out.println(room2);
 

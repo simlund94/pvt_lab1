@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
+ * Mocked unit test suite for the UpdateEmployeeService command class.
  *
  * @author Simon Lundgren
  * @version 1.0
@@ -19,22 +20,24 @@ class SaveEmployeeServiceTest {
 
     Employee employeeToSave;
     Employee employeeReturn;
+    EmployeeDao employeeDaoMock;
 
     @BeforeEach
     void setUp() {
         employeeToSave = new Employee("Simon Lundgren", 1994);
         employeeReturn = new Employee(1, "Simon Lundgren", 1994);
+        employeeDaoMock = mock(EmployeeDao.class);
     }
 
     @AfterEach
     void tearDown() {
         employeeToSave = null;
         employeeReturn = null;
+        employeeDaoMock = null;
     }
 
     @Test
-    void saveValidEmployeeShouldReturnFullEmployee() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
+    void saveValidEmployee_ShouldReturnFullEmployee() {
         when(employeeDaoMock.save(employeeToSave)).thenReturn(employeeReturn);
         SaveEmployeeService service = new SaveEmployeeService(employeeToSave, employeeDaoMock);
         Employee result = service.execute();
@@ -45,8 +48,7 @@ class SaveEmployeeServiceTest {
     }
 
     @Test
-    void saveNullEmployeeShouldThrowException() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
+    void saveNullEmployee_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new SaveEmployeeService(null, employeeDaoMock),

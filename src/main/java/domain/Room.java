@@ -69,13 +69,10 @@ public class Room {
      *
      * @param sizeInSqm   The size of the room in square meters
      * @param description A short description of the room. Must be non-null, non-empty and max 50 characters long
-     * @throws IllegalArgumentException If {@code id} is negative, {@code size} is negative or {@code description}
-     *                                  is invalid.
+     * @param siteId      The id of the site which the room belongs too, must be positive, non-zero integer.
+     * @throws IllegalArgumentException If {@code size} is negative, {@code description}
+     *                                  is invalid, or {@code siteID} is invalid.
      */
-    public Room(double sizeInSqm, String description) {
-        this(NO_ID, sizeInSqm, description, NO_ID);
-    }
-
     public Room(double sizeInSqm, String description, int siteId) {
         this(NO_ID, sizeInSqm, description, siteId);
     }

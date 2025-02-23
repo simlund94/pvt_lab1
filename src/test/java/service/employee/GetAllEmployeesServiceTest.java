@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
+ * Mocked unit test suite for the GetAllEmployeesService command class.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-02-19

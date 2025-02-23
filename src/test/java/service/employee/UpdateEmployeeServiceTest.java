@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
+ * Mocked unit test suite for the UpdateEmployeeService command class.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created 2025-02-20
@@ -19,22 +21,24 @@ class UpdateEmployeeServiceTest {
 
     Employee existingEmployee;
     Employee unexistantEmployee;
+    EmployeeDao employeeDaoMock;
 
     @BeforeEach
     void setUp() {
         existingEmployee = new Employee(1, "Simon Lundgren", 1994);
         unexistantEmployee = new Employee(2, "Kalle Kaka", 1989);
+        employeeDaoMock = mock(EmployeeDao.class);
     }
 
     @AfterEach
     void tearDown() {
         existingEmployee = null;
         unexistantEmployee = null;
+        employeeDaoMock = null;
     }
 
     @Test
-    void updateExistingEmployee() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
+    void updateExistingEmployee_ShouldReturnTrue() {
         when(employeeDaoMock.update(existingEmployee)).thenReturn(true);
         UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee, employeeDaoMock);
         boolean result = service.execute();
@@ -45,8 +49,7 @@ class UpdateEmployeeServiceTest {
     }
 
     @Test
-    void updateUnexistantEmployee() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
+    void updateNonExistantEmployee_ShouldReturnFalse() {
         when(employeeDaoMock.update(unexistantEmployee)).thenReturn(false);
         UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee, employeeDaoMock);
         boolean result = service.execute();
@@ -54,5 +57,14 @@ class UpdateEmployeeServiceTest {
         assertFalse(result, "The result should be false");
 
         verify(employeeDaoMock, times(1)).update(unexistantEmployee);
+    }
+
+    @Test
+    void updateNullEmployee_ShouldThrowException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new UpdateEmployeeService(null, employeeDaoMock),
+                "Passing a null employee should throw an exception."
+        );
     }
 }

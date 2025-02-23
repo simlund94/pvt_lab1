@@ -9,6 +9,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test suite for the Site class.
+ *
+ * @author Simon Lundgren
+ * @version 1.0
+ */
 class SiteTest {
 
     Site siteWithId;
@@ -22,7 +28,7 @@ class SiteTest {
     final int validPostalCode = 80176;
     final String validPostalArea = "Gävle";
     final String validPropertyDesignation = "GÄVLE KUNGSBÄCK 2:8";
-    final List<Room> listOfRooms = List.of(new Room(50.0, "Description"));
+    final List<Room> listOfRooms = List.of(new Room(50.0, "Description", validId));
 
     final int negativeId = -1;
     final String stringOver100Characters = "Högskolan i Gävle som ligger i Gävle bredvid kullen och vid Gavleån fast det är rätt " +

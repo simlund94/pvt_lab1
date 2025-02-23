@@ -6,7 +6,10 @@ import service.employee.*;
 import java.util.List;
 
 /**
- * Demo program to demonstrate the Employee and EmployeeDao classes.
+ * Demo program to demonstrate the service layer classes that primarily interact with Employee
+ *
+ * @author Simon Lundgren
+ * @version 1.0
  */
 public class SpikeEmployee {
 

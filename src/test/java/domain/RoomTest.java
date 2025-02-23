@@ -6,6 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test suite for the Room class.
+ *
+ * @author Simon Lundgren
+ * @version 1.0
+ */
 class RoomTest {
 
     Room roomWithId;
@@ -27,7 +33,7 @@ class RoomTest {
     void setUp() {
         roomWithId = new Room(validId, validSize, validRoomDescription, validSiteId);
         roomWithIdTwin = new Room(validId, validSize, validRoomDescription, validSiteId);
-        roomWithoutId = new Room(validSize, validRoomDescription);
+        roomWithoutId = new Room(validSize, validRoomDescription, validSiteId);
     }
 
     @AfterEach
@@ -123,16 +129,11 @@ class RoomTest {
     }
 
     @Test
-    void createRoomWithNoSiteId() {
-        assertEquals(noId, roomWithoutId.getSiteId(), "The site validId with no validId should be " + noId);
-    }
-
-    @Test
     void createRoomWithNegativeSiteId() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(validId, validSize, validRoomDescription, negativeId),
-                "A negative site validId shoulw throw an exception"
+                "A negative site validId should throw an exception"
         );
     }
 

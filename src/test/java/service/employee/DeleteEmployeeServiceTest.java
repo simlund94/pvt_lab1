@@ -6,35 +6,38 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.EmployeeDao;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
+ * Mocked unit test suite for the DeleteEmployeeService command class.
+ *
  * @author Simon Lundgren
  * @version 1.0
- * Created 2025-02-20
  */
 class DeleteEmployeeServiceTest {
 
     Employee existingEmployee;
     Employee nonExistantEmployee;
 
+    EmployeeDao employeeDaoMock;
+
     @BeforeEach
     void setUp() {
         existingEmployee = new Employee(1, "Simon Lundgren", 1994);
         nonExistantEmployee = new Employee(2, "Kalle Kaka", 1988);
+        employeeDaoMock = mock(EmployeeDao.class);
     }
 
     @AfterEach
     void tearDown() {
         existingEmployee = null;
         nonExistantEmployee = null;
+        employeeDaoMock = null;
     }
 
     @Test
     void deleteExistingEmployee() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
         when(employeeDaoMock.delete(existingEmployee)).thenReturn(true);
         DeleteEmployeeService service = new DeleteEmployeeService(existingEmployee, employeeDaoMock);
         boolean result = service.execute();
@@ -46,7 +49,6 @@ class DeleteEmployeeServiceTest {
 
     @Test
     void deleteNonExistentEmployee() {
-        EmployeeDao employeeDaoMock = mock(EmployeeDao.class);
         when(employeeDaoMock.delete(nonExistantEmployee)).thenReturn(false);
         DeleteEmployeeService service = new DeleteEmployeeService(nonExistantEmployee, employeeDaoMock);
         boolean result = service.execute();
@@ -54,5 +56,13 @@ class DeleteEmployeeServiceTest {
         assertFalse(result, " Delete employee should return false");
 
         verify(employeeDaoMock, times(1)).delete(nonExistantEmployee);
+    }
+
+    @Test
+    void deleteNullEmployee_ShouldThrowException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new DeleteEmployeeService(null, employeeDaoMock),
+                "Trying to delete a null employee should throw an exception"
+        );
     }
 }

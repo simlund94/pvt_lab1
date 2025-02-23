@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,12 +34,13 @@ class EmployeeDaoTest {
     Employee employee2;
     Employee employee1WithoutId;
 
+    final int negativeId = -1;
+
     @BeforeEach
     void setUp() {
         dbConnMock = mock(DbConn.class);
         preparedStatementMock = mock(PreparedStatement.class);
         resultSetMock = mock(ResultSet.class);
-
         employeeDao = new EmployeeDao(dbConnMock);
 
         employee1 = new Employee(1, "Simon Lundgren", 1994);
@@ -51,6 +53,7 @@ class EmployeeDaoTest {
         dbConnMock = null;
         preparedStatementMock = null;
         resultSetMock = null;
+        employeeDao = null;
 
         employee1 = null;
         employee2 = null;
@@ -62,7 +65,7 @@ class EmployeeDaoTest {
         String query = "SELECT id, name, birth_year FROM lab_employees WHERE id = ?";
         when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
         when(preparedStatementMock.getResultSet()).thenReturn(resultSetMock);
-        when(resultSetMock.next()).thenReturn(true);
+        when(resultSetMock.next()).thenReturn(true); // simulating employee found
         when(resultSetMock.getInt("id")).thenReturn(employee1.getId());
         when(resultSetMock.getString("name")).thenReturn(employee1.getName());
         when(resultSetMock.getInt("birth_year")).thenReturn(employee1.getBirthYear());
@@ -83,14 +86,26 @@ class EmployeeDaoTest {
     void getEmployeeWithNegativeId_ShouldThrowException() throws SQLException {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> employeeDao.get(-1),
+                () -> employeeDao.get(negativeId),
                 "Passing a negative id to the employeeDao should throw an exception"
         );
     }
 
     @Test
     void getEmployeeNotInDatabase_ShouldThrowException() throws SQLException {
+        String query = "SELECT id, name, birth_year FROM lab_employees WHERE id = ?";
+        when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
+        when(preparedStatementMock.getResultSet()).thenReturn(resultSetMock);
+        when(resultSetMock.next()).thenReturn(false);
 
+        assertThrows(
+                NoSuchElementException.class,
+                () -> employeeDao.get(3),
+                "Retrieving an element not in the database should throw an exception"
+        );
+        verify(preparedStatementMock, times(1)).getResultSet();
+        verify(dbConnMock, times(1)).prepareStatement(query);
+        verify(resultSetMock, times(1)).next();
     }
 
     @Test
@@ -200,9 +215,9 @@ class EmployeeDaoTest {
     }
 
     @Test
-    void getAllEmployees_ReturnsEmployees() throws SQLException {
+    void getAllEmployeesSuccessfully() throws SQLException {
         String query = "SELECT id, name, birth_year FROM lab_employees";
-        // setup mocking behaviour
+
         when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
         when(preparedStatementMock.getResultSet()).thenReturn(resultSetMock);
         when(resultSetMock.next()).thenReturn(true, true, false); // simulating two rows found
