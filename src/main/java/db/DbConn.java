@@ -48,7 +48,6 @@ public class DbConn {
         return connection;
     }
 
-
     private Statement getStatement(Connection connection) {
         try {
             statement = connection.createStatement();
@@ -89,7 +88,6 @@ public class DbConn {
                 statement.close();
             if (connection != null)
                 connection.close();
-            System.out.println("DB Connection closed");
         } catch (SQLException e) {
             System.err.println("Could not close the statement or the connection");
             System.err.println(e.getMessage());

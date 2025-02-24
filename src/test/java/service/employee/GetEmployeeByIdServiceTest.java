@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.EmployeeDao;
 
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +38,7 @@ class GetEmployeeByIdServiceTest {
     }
 
     @Test
-    void getEmployeeByValidId() {
+    void getEmployeeByValidId() throws SQLException {
         when(employeeDaoMock.get(1)).thenReturn(employeeToTest);
         GetEmployeeByIdService service = new GetEmployeeByIdService(1, employeeDaoMock);
         Employee result = service.execute();
@@ -49,7 +50,7 @@ class GetEmployeeByIdServiceTest {
     }
 
     @Test
-    void getNonExistingEmployee_ShouldThrowException() {
+    void getNonExistingEmployee_ShouldThrowException() throws SQLException {
         when(employeeDaoMock.get(2)).thenThrow(NoSuchElementException.class);
         GetEmployeeByIdService service = new GetEmployeeByIdService(2, employeeDaoMock);
 

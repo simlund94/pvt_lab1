@@ -1,5 +1,6 @@
 package repository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public interface Dao<T> {
      * @param toSave The object to save
      * @return The saved object
      */
-    T save(T toSave);
+    T save(T toSave) throws SQLException;
 
     /**
      * Updates the information of the object in the database table to match the passed object.
@@ -41,7 +42,7 @@ public interface Dao<T> {
      * @param id The primary key in the table
      * @return The object matching the id
      */
-    T get(int id);
+    T get(int id) throws SQLException;
 
     /**
      * Retrieves all objects of the parameters type from the table.

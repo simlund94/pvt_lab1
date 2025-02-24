@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.EmployeeDao;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +39,7 @@ class SaveEmployeeServiceTest {
     }
 
     @Test
-    void saveValidEmployee_ShouldReturnFullEmployee() {
+    void saveValidEmployee_ShouldReturnFullEmployee() throws SQLException {
         when(employeeDaoMock.save(employeeToSave)).thenReturn(employeeReturn);
         SaveEmployeeService service = new SaveEmployeeService(employeeToSave, employeeDaoMock);
         Employee result = service.execute();

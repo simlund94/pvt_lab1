@@ -39,29 +39,25 @@ public class EmployeeDao implements Dao<Employee> {
      * @throws NoSuchElementException if no matching id is found.
      */
     @Override
-    public Employee get(int employeeId) {
+    public Employee get(int employeeId) throws SQLException {
         if (employeeId <= 0) {
             throw new IllegalArgumentException("employeeId must be greater than 0");
         }
 
         String query = "SELECT id, name, birth_year FROM lab_employees WHERE id = ?";
         Employee employee = null;
-        try {
-            prst = dbConn.prepareStatement(query);
-            prst.setInt(1, employeeId);
-            prst.executeQuery();
-            ResultSet rs = prst.getResultSet();
-            if (rs.next()) {
-                int id = rs.getInt("id");
-                int age = rs.getInt("birth_year");
-                String name = rs.getString("name");
-                employee = new Employee(id, name, age);
-            } else {
-                String errorMessage = String.format("An employee with ID: %d does not exist in the database!", employeeId);
-                throw new NoSuchElementException(errorMessage);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, employeeId);
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        if (rs.next()) {
+            int id = rs.getInt("id");
+            int age = rs.getInt("birth_year");
+            String name = rs.getString("name");
+            employee = new Employee(id, name, age);
+        } else {
+            String errorMessage = String.format("An employee with ID: %d does not exist in the database!", employeeId);
+            throw new NoSuchElementException(errorMessage);
         }
         return employee;
     }
@@ -74,25 +70,21 @@ public class EmployeeDao implements Dao<Employee> {
      * @return The saved employee record with a generated id.
      */
     @Override
-    public Employee save(Employee employee) {
+    public Employee save(Employee employee) throws SQLException {
         if (employee == null) {
             throw new IllegalArgumentException("Cannot save a null employee");
         }
 
         String query = "INSERT INTO lab_employees(name, birth_year) VALUES(?, ?)";
         Employee employeeSaved = null;
-        try {
-            prst = dbConn.prepareStatement(query);
-            prst.setString(1, employee.getName());
-            prst.setInt(2, employee.getBirthYear());
-            prst.executeUpdate();
-            ResultSet rs = prst.getGeneratedKeys();
-            if (rs.next()) {
-                int id = rs.getInt(1);
-                employeeSaved = new Employee(id, employee.getName(), employee.getBirthYear());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = dbConn.prepareStatement(query);
+        prst.setString(1, employee.getName());
+        prst.setInt(2, employee.getBirthYear());
+        prst.executeUpdate();
+        ResultSet rs = prst.getGeneratedKeys();
+        if (rs.next()) {
+            int id = rs.getInt(1);
+            employeeSaved = new Employee(id, employee.getName(), employee.getBirthYear());
         }
         return employeeSaved;
     }

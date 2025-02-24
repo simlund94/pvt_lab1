@@ -4,6 +4,7 @@ import domain.Site;
 import repository.Dao;
 import repository.SiteDao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public class SpikeSite {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         Dao<Site> dao = new SiteDao();
 

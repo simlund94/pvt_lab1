@@ -1,7 +1,13 @@
 package service.employee;
 
+import com.google.protobuf.Service;
+import db.DbConn;
 import domain.Employee;
 import repository.EmployeeDao;
+import service.CleaningManagerServiceException;
+import service.ServiceCommand;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request retrieve an employee by id from the database.
@@ -9,7 +15,7 @@ import repository.EmployeeDao;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class GetEmployeeByIdService {
+public class GetEmployeeByIdService implements ServiceCommand<Employee> {
 
     private final int id;
 
@@ -31,6 +37,14 @@ public class GetEmployeeByIdService {
     }
 
     public Employee execute() {
-        return employeeDao.get(id);
+        Employee employeeReturned;
+        try {
+            employeeReturned = employeeDao.get(id);
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException("An error occured.");
+        } finally {
+            DbConn.i().close();
+        }
+        return employeeReturned;
     }
 }

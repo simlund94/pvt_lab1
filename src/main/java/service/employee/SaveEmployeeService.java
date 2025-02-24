@@ -1,7 +1,12 @@
 package service.employee;
 
+import db.DbConn;
 import domain.Employee;
 import repository.EmployeeDao;
+import service.CleaningManagerServiceException;
+import service.ServiceCommand;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request to save an employee to the database.
@@ -9,7 +14,7 @@ import repository.EmployeeDao;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class SaveEmployeeService {
+public class SaveEmployeeService implements ServiceCommand<Employee> {
 
     private final Employee employee;
 
@@ -31,6 +36,14 @@ public class SaveEmployeeService {
     }
 
     public Employee execute() {
-        return employeeDao.save(employee);
+        Employee employeeSaved;
+        try {
+            employeeSaved = employeeDao.save(employee);
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException("An error occurred.");
+        } finally {
+            DbConn.i().close();
+        }
+        return employeeSaved;
     }
 }
