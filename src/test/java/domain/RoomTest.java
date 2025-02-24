@@ -44,11 +44,8 @@ class RoomTest {
     }
 
     @Test
-    void getId() {
-        assertEquals(
-                validId,
-                roomWithId.getId(),
-                "Room validId should be " + validId
+    void getValidId() {
+        assertEquals(validId, roomWithId.getId(), "Room validId should be " + validId
         );
     }
 
@@ -133,7 +130,7 @@ class RoomTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(validId, validSize, validRoomDescription, negativeId),
-                "A negative site validId should throw an exception"
+                "A negative site id should throw an exception"
         );
     }
 
@@ -153,7 +150,7 @@ class RoomTest {
                 "Two rooms which are not semantically identical should return false from equals()");
         assertNotEquals(roomWithId, tooLongDescription,
                 "Should not be equal when compared to another object");
-        assertNotEquals(roomWithId, null,
+        assertNotEquals(null, roomWithId,
                 "Should not be equal when compared to a null value");
     }
 

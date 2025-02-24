@@ -15,6 +15,7 @@ import java.util.Optional;
  * A DAO class for retrieving and persisting Employee records in the database.
  *
  * @author Simon Lundgren
+ * @version 1.0
  */
 public class EmployeeDao implements Dao<Employee> {
 

@@ -7,7 +7,7 @@ import repository.SiteDao;
 import java.util.List;
 
 /**
- * Demo program to demonstrate service layer classes that mainly interact with Site
+ * Demo program to demonstrate the DAO for the Site class.
  *
  * @author Simon Lundgren
  * @version 1.0

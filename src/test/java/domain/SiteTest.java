@@ -240,7 +240,7 @@ class SiteTest {
                 "Two sites which are not semantically identical should return false from equals()");
         assertNotEquals(siteWithId, validName,
                 "Should not be equal when compared to another object");
-        assertNotEquals(siteWithId, null,
+        assertNotEquals(null, siteWithId,
                 "Should not be equal when compared to a null value");
     }
 
