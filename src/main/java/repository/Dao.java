@@ -8,6 +8,7 @@ import java.util.List;
  *
  * @param <T> The type of object which the DAO class should handle.
  * @author Simon Lundgren
+ * @version 1.0
  */
 public interface Dao<T> {
 

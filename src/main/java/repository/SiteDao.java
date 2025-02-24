@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
  * A DAO class for retrieving and persisting Site records in the database.
  *
  * @author Simon Lundgren
+ * @version 1.0
  */
 public class SiteDao implements Dao<Site> {
 
