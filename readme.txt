@@ -1,0 +1,3 @@
+ - Skapa Command Interface som är typparametriserat, implementera alla Commandklasser
+ - Flytta open/close av databasen till service klasserna
+ - Skapa ett eget CleaningManagerException
