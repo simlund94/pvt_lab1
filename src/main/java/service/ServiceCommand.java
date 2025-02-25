@@ -1,6 +1,5 @@
 package service;
 
-
 /**
  * Interface to define the behaviour of a Command pattern.
  *
@@ -10,5 +9,11 @@ package service;
  */
 @FunctionalInterface
 public interface ServiceCommand<T> {
+
+    /**
+     * Executes the implemented operation, and returns the result of the operation.
+     *
+     * @return The return value of the operation
+     */
     T execute();
 }

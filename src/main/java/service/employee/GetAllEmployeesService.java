@@ -31,12 +31,12 @@ public class GetAllEmployeesService {
 
     public List<Employee> execute() {
         try {
+            DbConn.i().open();
             List<Employee> employeesReturned = employeeDao.getAll();
+            DbConn.i().close();
             return employeesReturned;
         } catch (SQLException e) {
             throw new CleaningManagerServiceException(e.getMessage());
-        } finally {
-            DbConn.i().close();
         }
     }
 }

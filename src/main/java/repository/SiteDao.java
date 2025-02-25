@@ -48,7 +48,7 @@ public class SiteDao implements Dao<Site> {
      * @return The same object with a generated id
      */
     @Override
-    public Site save(Site site) {
+    public Site save(Site site) throws SQLException {
         if (site == null) {
             throw new IllegalArgumentException("Site cannot be null");
         }
@@ -56,28 +56,24 @@ public class SiteDao implements Dao<Site> {
         String query = "INSERT INTO lab_sites(name, address, postal_code, postal_area, property_designation) " +
                 "VALUES(?, ?, ?, ?, ?)";
         Site siteSaved = null;
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setString(1, site.getName());
-            prst.setString(2, site.getAddress());
-            prst.setInt(3, site.getPostalCode());
-            prst.setString(4, site.getPostalArea());
-            prst.setString(5, site.getPropertyDesignation());
-            prst.executeUpdate();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setString(1, site.getName());
+        prst.setString(2, site.getAddress());
+        prst.setInt(3, site.getPostalCode());
+        prst.setString(4, site.getPostalArea());
+        prst.setString(5, site.getPropertyDesignation());
+        prst.executeUpdate();
 
-            rs = prst.getGeneratedKeys();
-            if (rs.next()) {
-                int newId = rs.getInt(1);
-                siteSaved = new Site(newId,
-                        site.getName(),
-                        site.getAddress(),
-                        site.getPostalCode(),
-                        site.getPostalArea(),
-                        site.getPropertyDesignation(),
-                        site.getRooms());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        rs = prst.getGeneratedKeys();
+        if (rs.next()) {
+            int newId = rs.getInt(1);
+            siteSaved = new Site(newId,
+                    site.getName(),
+                    site.getAddress(),
+                    site.getPostalCode(),
+                    site.getPostalArea(),
+                    site.getPropertyDesignation(),
+                    site.getRooms());
         }
         return siteSaved;
     }
@@ -86,28 +82,20 @@ public class SiteDao implements Dao<Site> {
      * Updates mutable fields of a site in the database matching the id of the passed site object.
      *
      * @param site The site to update
-     * @return True if successful, false otherwise.
+     * @return The updated site from the database
      */
     @Override
-    public boolean update(Site site) {
+    public Site update(Site site) throws SQLException {
         if (site == null) {
             throw new IllegalArgumentException("Site cannot be null");
         }
 
         String query = "UPDATE lab_sites SET name = ? WHERE id = ?";
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setString(1, site.getName());
-            prst.setInt(2, site.getId());
-            int affectedRows = prst.executeUpdate();
-            int expectedAffectedRows = 1;
-            if (affectedRows == expectedAffectedRows) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        prst = DbConn.i().prepareStatement(query);
+        prst.setString(1, site.getName());
+        prst.setInt(2, site.getId());
+        prst.executeUpdate();
+        return get(site.getId());
     }
 
     /**
@@ -118,22 +106,18 @@ public class SiteDao implements Dao<Site> {
      * @return True if successful, false otherwise
      */
     @Override
-    public boolean delete(Site site) {
+    public boolean delete(Site site) throws SQLException {
         if (site == null) {
             throw new IllegalArgumentException("Site cannot be null");
         }
 
         String query = "DELETE FROM lab_sites WHERE id = ?";
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setInt(1, site.getId());
-            int affectedRows = prst.executeUpdate();
-            int expectedAffectedRows = 1;
-            if (affectedRows == expectedAffectedRows) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setInt(1, site.getId());
+        int affectedRows = prst.executeUpdate();
+        int expectedAffectedRows = 1;
+        if (affectedRows == expectedAffectedRows) {
+            return true;
         }
         return false;
     }
@@ -147,35 +131,29 @@ public class SiteDao implements Dao<Site> {
      * @throws NoSuchElementException If there is not matching id in the database
      */
     @Override
-    public Site get(int id) {
+    public Site get(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Site id cannot be zero or negative.");
         }
 
         String query = "SELECT id, name, address, postal_code, postal_area, property_designation FROM lab_sites " +
                 "WHERE id = ?";
-        Site fetchedSite = null;
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setInt(1, id);
-            prst.executeQuery();
-            ResultSet rs = prst.getResultSet();
-            if (rs.next()) {
-                String name = rs.getString("name");
-                String address = rs.getString("address");
-                int postalCode = rs.getInt("postal_code");
-                String postalArea = rs.getString("postal_area");
-                String propertyDesignation = rs.getString("property_designation");
-                List<Room> roomsOnSite = new RoomDao().getAllRoomsOnSite(id);
-                fetchedSite = new Site(id, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite);
-            } else {
-                String errorMessage = String.format("A site with ID: %d does not exist in the database!", id);
-                throw new NoSuchElementException(errorMessage);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setInt(1, id);
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        if (rs.next()) {
+            String name = rs.getString("name");
+            String address = rs.getString("address");
+            int postalCode = rs.getInt("postal_code");
+            String postalArea = rs.getString("postal_area");
+            String propertyDesignation = rs.getString("property_designation");
+            List<Room> roomsOnSite = new RoomDao().getAllRoomsOnSite(id);
+            return new Site(id, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite);
+        } else {
+            String errorMessage = String.format("A site with ID: %d does not exist in the database!", id);
+            throw new NoSuchElementException(errorMessage);
         }
-        return fetchedSite;
     }
 
     /**
@@ -184,26 +162,22 @@ public class SiteDao implements Dao<Site> {
      * @return A list of all Site objects in the database.
      */
     @Override
-    public List<Site> getAll() {
+    public List<Site> getAll() throws SQLException {
         String query = "SELECT id, name, address, postal_code, postal_area, property_designation FROM lab_sites";
         List<Site> fetchedSites = new ArrayList<>();
         RoomDao roomDao = new RoomDao();
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.executeQuery();
-            ResultSet rs = prst.getResultSet();
-            while (rs.next()) {
-                int siteId = rs.getInt("id");
-                String name = rs.getString("name");
-                String address = rs.getString("address");
-                int postalCode = rs.getInt("postal_code");
-                String postalArea = rs.getString("postal_area");
-                String propertyDesignation = rs.getString("property_designation");
-                List<Room> roomsOnSite = roomDao.getAllRoomsOnSite(siteId);
-                fetchedSites.add(new Site(siteId, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        while (rs.next()) {
+            int siteId = rs.getInt("id");
+            String name = rs.getString("name");
+            String address = rs.getString("address");
+            int postalCode = rs.getInt("postal_code");
+            String postalArea = rs.getString("postal_area");
+            String propertyDesignation = rs.getString("property_designation");
+            List<Room> roomsOnSite = roomDao.getAllRoomsOnSite(siteId);
+            fetchedSites.add(new Site(siteId, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite));
         }
         return fetchedSites;
     }
@@ -214,24 +188,21 @@ public class SiteDao implements Dao<Site> {
      * @param id the Site id
      * @return True if present, false otherwise
      */
-    public boolean checkIfSiteExists(int id) {
+    public boolean checkIfSiteExists(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Id cannot be zero or negative");
         }
 
         String query = "SELECT EXISTS(SELECT 1 FROM lab_sites WHERE id = ?)";
-        try {
-            prst = dbConn.prepareStatement(query);
-            prst.setInt(1, id);
-            prst.executeQuery();
-            ResultSet rs = prst.getResultSet();
-            if (rs.next()) {
-                return rs.getBoolean(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, id);
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        if (rs.next()) {
+            return rs.getBoolean(1);
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -240,7 +211,7 @@ public class SiteDao implements Dao<Site> {
      * @param site The site to check
      * @return true if present, false otherwise
      */
-    public boolean checkIfSiteExists(Site site) {
+    public boolean checkIfSiteExists(Site site) throws SQLException {
         if (site == null) {
             throw new IllegalArgumentException("Site cannot be null");
         }

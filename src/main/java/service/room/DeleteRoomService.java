@@ -1,8 +1,13 @@
 package service.room;
 
+import db.DbConn;
 import domain.Room;
 
 import repository.RoomDao;
+import service.CleaningManagerServiceException;
+import service.ServiceCommand;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request to delete a room in the database.
@@ -10,7 +15,7 @@ import repository.RoomDao;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class DeleteRoomService {
+public class DeleteRoomService implements ServiceCommand<Boolean> {
 
     private final Room room;
 
@@ -31,7 +36,15 @@ public class DeleteRoomService {
         this(room, new RoomDao());
     }
 
-    public boolean execute() {
-       return roomDao.delete(room);
+    @Override
+    public Boolean execute() {
+        try {
+            DbConn.i().open();
+            boolean result = roomDao.delete(room);
+            DbConn.i().close();
+            return result;
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException(e.getMessage());
+        }
     }
 }

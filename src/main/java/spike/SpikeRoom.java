@@ -26,7 +26,6 @@ public class SpikeRoom {
 
         // Update room
         room2.setDescription("A fancy room!");
-        boolean updateStatus = new UpdateRoomService(room2).execute();
         room2 = new GetRoomByIdService(room2.getId()).execute();
         System.out.println(room2);
 

@@ -37,14 +37,13 @@ public class GetEmployeeByIdService implements ServiceCommand<Employee> {
     }
 
     public Employee execute() {
-        Employee employeeReturned;
         try {
-            employeeReturned = employeeDao.get(id);
+            DbConn.i().open();
+            Employee employeeReturned = employeeDao.get(id);
+            DbConn.i().close();
+            return employeeReturned;
         } catch (SQLException e) {
             throw new CleaningManagerServiceException("An error occured.");
-        } finally {
-            DbConn.i().close();
         }
-        return employeeReturned;
     }
 }

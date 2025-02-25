@@ -37,11 +37,12 @@ public class DeleteEmployeeService {
 
     public boolean execute() {
         try {
-            return employeeDao.delete(employee);
+            DbConn.i().open();
+            boolean result = employeeDao.delete(employee);
+            DbConn.i().close();
+            return result;
         } catch (SQLException e) {
             throw new CleaningManagerServiceException(e.getMessage());
-        } finally {
-            DbConn.i().close();
         }
     }
 }

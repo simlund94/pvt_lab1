@@ -1,8 +1,13 @@
 package service.room;
 
+import db.DbConn;
 import domain.Room;
 import repository.RoomDao;
+import service.CleaningManagerServiceException;
+import service.ServiceCommand;
 import service.employee.UpdateEmployeeService;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request to update a room record in the database.
@@ -10,7 +15,7 @@ import service.employee.UpdateEmployeeService;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class UpdateRoomService {
+public class UpdateRoomService implements ServiceCommand<Room> {
 
     private final Room room;
 
@@ -31,7 +36,15 @@ public class UpdateRoomService {
         this(room, new RoomDao());
     }
 
-    public boolean execute() {
-        return roomDao.update(room);
+    @Override
+    public Room execute() {
+        try {
+            DbConn.i().open();
+            Room updatedRoom = roomDao.update(room);
+            DbConn.i().close();
+            return updatedRoom;
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException(e.getMessage());
+        }
     }
 }

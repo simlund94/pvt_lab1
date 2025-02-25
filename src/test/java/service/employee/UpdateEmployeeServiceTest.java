@@ -6,6 +6,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.EmployeeDao;
+import service.CleaningManagerServiceException;
+
+import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,24 +42,25 @@ class UpdateEmployeeServiceTest {
     }
 
     @Test
-    void updateExistingEmployee_ShouldReturnTrue() {
-        when(employeeDaoMock.update(existingEmployee)).thenReturn(true);
+    void updateExistingEmployee_ShouldReturnUpdatedEmployee() throws SQLException {
+        when(employeeDaoMock.update(existingEmployee)).thenReturn(existingEmployee);
         UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee, employeeDaoMock);
-        boolean result = service.execute();
+        Employee result = service.execute();
 
-        assertTrue(result, "The result should be true");
+        assertEquals(existingEmployee, result, "The result should be true");
 
         verify(employeeDaoMock, times(1)).update(existingEmployee);
     }
 
     @Test
-    void updateNonExistantEmployee_ShouldReturnFalse() {
-        when(employeeDaoMock.update(unexistantEmployee)).thenReturn(false);
+    void updateNonExistantEmployee_ShouldThrowException() throws SQLException {
+        when(employeeDaoMock.update(unexistantEmployee)).thenThrow(NoSuchElementException.class);
         UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee, employeeDaoMock);
-        boolean result = service.execute();
-
-        assertFalse(result, "The result should be false");
-
+        assertThrows(
+                NoSuchElementException.class,
+                () -> service.execute(),
+                "Updating an employee not in the database should throw an exception"
+        );
         verify(employeeDaoMock, times(1)).update(unexistantEmployee);
     }
 

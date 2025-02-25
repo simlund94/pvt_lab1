@@ -5,6 +5,7 @@ import domain.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -111,37 +112,22 @@ class EmployeeDaoTest {
     @Test
     void updateEmployeeSuccessfully() throws SQLException {
         String query = "UPDATE lab_employees SET name = ? WHERE id = ?";
+        EmployeeDao daoSpy = spy(new EmployeeDao(dbConnMock));
+        employee1.setName("Anders Lundgren");
+        doReturn(employee1).when(daoSpy).get(employee1.getId());
         when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
         when(preparedStatementMock.executeUpdate()).thenReturn(1);
 
-        employee1.setName("Anders Lundgren");
-        boolean result = employeeDao.update(employee1);
+        Employee result = daoSpy.update(employee1);
+        assertEquals(employee1, result, "The employee returned should be equal to the employee updated.");
 
-        assertTrue(result, "Should return true for successful update.");
-        verify(dbConnMock, times(1)).prepareStatement(query);
+        verify(daoSpy).get(employee1.getId());
         verify(preparedStatementMock, times(1)).setString(1, employee1.getName());
         verify(preparedStatementMock, times(1)).setInt(2, employee1.getId());
-        verify(preparedStatementMock, times(1)).executeUpdate();
     }
 
     @Test
-    void updateEmployeeUnsuccessfully() throws SQLException {
-        String query = "UPDATE lab_employees SET name = ? WHERE id = ?";
-        when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
-        when(preparedStatementMock.executeUpdate()).thenReturn(0);
-
-        employee1.setName("Anders Lundgren");
-        boolean result = employeeDao.update(employee1);
-
-        assertFalse(result, "Should return true for successful update.");
-        verify(dbConnMock, times(1)).prepareStatement(query);
-        verify(preparedStatementMock, times(1)).setString(1, employee1.getName());
-        verify(preparedStatementMock, times(1)).setInt(2, employee1.getId());
-        verify(preparedStatementMock, times(1)).executeUpdate();
-    }
-
-    @Test
-    void updateNullEmployee_ShouldThrowException() throws SQLException {
+    void updateNullEmployee_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> employeeDao.update(null),

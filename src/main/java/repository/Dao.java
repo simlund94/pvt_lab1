@@ -25,9 +25,9 @@ public interface Dao<T> {
      * Updates the information of the object in the database table to match the passed object.
      *
      * @param toUpdate The object to update
-     * @return true if successful, false otherwise
+     * @return The updated object
      */
-    boolean update(T toUpdate) throws SQLException;
+    T update(T toUpdate) throws SQLException;
 
     /**
      * Deletes the object of the parameters type, matching the object id, in the table.

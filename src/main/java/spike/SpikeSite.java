@@ -1,5 +1,6 @@
 package spike;
 
+import db.DbConn;
 import domain.Site;
 import repository.Dao;
 import repository.SiteDao;
@@ -17,6 +18,7 @@ public class SpikeSite {
 
     public static void main(String[] args) throws SQLException {
 
+        DbConn.i().open();
         Dao<Site> dao = new SiteDao();
 
         // get site
@@ -36,7 +38,7 @@ public class SpikeSite {
         // update site
         System.out.println("--- Updating a site ---");
         site2.setName("Kålhagsmätarhuset");
-        boolean result1 = dao.update(site2);
+        Site result1 = dao.update(site2);
         System.out.printf("%s updated: %s\n", site2.getName(), result1);
 
         site2 = dao.get(site2.getId());
@@ -59,5 +61,6 @@ public class SpikeSite {
         System.out.println("--- Printing all sites in the database ---");
         List<Site> sites = dao.getAll();
         sites.forEach(site -> System.out.println(site));
+        DbConn.i().close();
     }
 }
