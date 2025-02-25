@@ -97,28 +97,24 @@ public class EmployeeDao implements Dao<Employee> {
      * @return true if successful, otherwise false
      */
     @Override
-    public boolean update(Employee employee) {
+    public boolean update(Employee employee) throws SQLException {
         if (employee == null) {
             throw new IllegalArgumentException("Cannot update a null employee.");
         }
 
         String query = "UPDATE lab_employees SET name = ? WHERE id = ?";
-        try {
-            prst = dbConn.prepareStatement(query);
-            prst.setString(1, employee.getName());
-            prst.setInt(2, employee.getId());
-            int affectedRows = prst.executeUpdate();
-            int expectedAffectedRows = 1;
+        prst = dbConn.prepareStatement(query);
+        prst.setString(1, employee.getName());
+        prst.setInt(2, employee.getId());
+        int affectedRows = prst.executeUpdate();
+        int expectedAffectedRows = 1;
 
-            // Om databasen returnerar 1 påverkad rad så lyckades uppdateringen.
-            // Om databasen returnerar 0 rader så misslyckades det.
-            // Om databasen returnerar något annat så har något gått åt skogen, då id ska identifiera
-            // en unik tupel i tabellen.
-            if (affectedRows == expectedAffectedRows) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Om databasen returnerar 1 påverkad rad så lyckades uppdateringen.
+        // Om databasen returnerar 0 rader så misslyckades det.
+        // Om databasen returnerar något annat så har något gått åt skogen, då id ska identifiera
+        // en unik tupel i tabellen.
+        if (affectedRows == expectedAffectedRows) {
+            return true;
         }
         return false;
     }
@@ -130,21 +126,17 @@ public class EmployeeDao implements Dao<Employee> {
      * @return true if successful, otherwise false
      */
     @Override
-    public boolean delete(Employee employee) {
+    public boolean delete(Employee employee) throws SQLException {
         if (employee == null) {
             throw new IllegalArgumentException("Cannot delete a null employee");
         }
 
         String query = "DELETE FROM lab_employees WHERE id = ?";
-        try {
-            prst = dbConn.prepareStatement(query);
-            prst.setInt(1, employee.getId());
-            int affectedRows = prst.executeUpdate();
-            if (affectedRows == 1) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, employee.getId());
+        int affectedRows = prst.executeUpdate();
+        if (affectedRows == 1) {
+            return true;
         }
         return false;
     }
@@ -155,23 +147,19 @@ public class EmployeeDao implements Dao<Employee> {
      * @return A List of Employee objects containing all employees in the database
      */
     @Override
-    public List<Employee> getAll() {
+    public List<Employee> getAll() throws SQLException {
         List<Employee> employees = new ArrayList<Employee>();
-        try {
-            prst = dbConn.prepareStatement(
-                    "SELECT id, name, birth_year FROM lab_employees"
-            );
-            prst.executeQuery();
-            ResultSet rs = prst.getResultSet();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                int birthYear = rs.getInt("birth_year");
-                String name = rs.getString("name");
-                Employee employee = new Employee(id, name, birthYear);
-                employees.add(employee);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = dbConn.prepareStatement(
+                "SELECT id, name, birth_year FROM lab_employees"
+        );
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            int birthYear = rs.getInt("birth_year");
+            String name = rs.getString("name");
+            Employee employee = new Employee(id, name, birthYear);
+            employees.add(employee);
         }
         return employees;
     }

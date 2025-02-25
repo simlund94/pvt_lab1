@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.EmployeeDao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +26,7 @@ class GetAllEmployeesServiceTest {
     EmployeeDao employeeDaoMock;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws SQLException {
         employees = List.of(
                 new Employee(1, "Görgen Antonsson", 1971),
                 new Employee(2, "Niklas Andersson", 1991));
@@ -35,7 +36,7 @@ class GetAllEmployeesServiceTest {
     }
 
     @Test
-    void getAllEmployees() {
+    void getAllEmployees() throws SQLException {
         GetAllEmployeesService instance = new GetAllEmployeesService(employeeDaoMock);
         List<Employee> result = instance.execute();
 

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.EmployeeDao;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +39,7 @@ class DeleteEmployeeServiceTest {
     }
 
     @Test
-    void deleteExistingEmployee() {
+    void deleteExistingEmployee() throws SQLException {
         when(employeeDaoMock.delete(existingEmployee)).thenReturn(true);
         DeleteEmployeeService service = new DeleteEmployeeService(existingEmployee, employeeDaoMock);
         boolean result = service.execute();
@@ -48,7 +50,7 @@ class DeleteEmployeeServiceTest {
     }
 
     @Test
-    void deleteNonExistentEmployee() {
+    void deleteNonExistentEmployee() throws SQLException {
         when(employeeDaoMock.delete(nonExistantEmployee)).thenReturn(false);
         DeleteEmployeeService service = new DeleteEmployeeService(nonExistantEmployee, employeeDaoMock);
         boolean result = service.execute();

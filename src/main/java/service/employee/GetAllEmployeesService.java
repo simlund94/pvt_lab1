@@ -1,8 +1,11 @@
 package service.employee;
 
+import db.DbConn;
 import domain.Employee;
 import repository.EmployeeDao;
+import service.CleaningManagerServiceException;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -27,6 +30,13 @@ public class GetAllEmployeesService {
     }
 
     public List<Employee> execute() {
-        return employeeDao.getAll();
+        try {
+            List<Employee> employeesReturned = employeeDao.getAll();
+            return employeesReturned;
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException(e.getMessage());
+        } finally {
+            DbConn.i().close();
+        }
     }
 }

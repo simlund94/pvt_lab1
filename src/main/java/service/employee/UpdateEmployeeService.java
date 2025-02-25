@@ -2,6 +2,9 @@ package service.employee;
 
 import domain.Employee;
 import repository.EmployeeDao;
+import service.CleaningManagerServiceException;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request to update an employee record in the database.
@@ -31,7 +34,12 @@ public class UpdateEmployeeService {
     }
 
     public boolean execute() {
-        return employeeDao.update(employee);
+        try {
+            return employeeDao.update(employee);
+
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException(e.getMessage());
+        }
     }
 }
 

@@ -1,8 +1,12 @@
 package service.employee;
 
 import com.mysql.cj.x.protobuf.MysqlxCrud;
+import db.DbConn;
 import domain.Employee;
 import repository.EmployeeDao;
+import service.CleaningManagerServiceException;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request to delete an employee from the database.
@@ -32,6 +36,12 @@ public class DeleteEmployeeService {
     }
 
     public boolean execute() {
-        return employeeDao.delete(employee);
+        try {
+            return employeeDao.delete(employee);
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException(e.getMessage());
+        } finally {
+            DbConn.i().close();
+        }
     }
 }

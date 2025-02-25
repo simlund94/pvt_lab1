@@ -27,7 +27,7 @@ public interface Dao<T> {
      * @param toUpdate The object to update
      * @return true if successful, false otherwise
      */
-    boolean update(T toUpdate);
+    boolean update(T toUpdate) throws SQLException;
 
     /**
      * Deletes the object of the parameters type, matching the object id, in the table.
@@ -35,7 +35,7 @@ public interface Dao<T> {
      * @param toDelete The object to delete
      * @return true if successful, false otherwise
      */
-    boolean delete(T toDelete);
+    boolean delete(T toDelete) throws SQLException;
 
     /**
      * Retrieves an object from the table, matching the passed id corresponding to its primary key.
@@ -50,5 +50,5 @@ public interface Dao<T> {
      *
      * @return A list of all objects in the table.
      */
-    List<T> getAll();
+    List<T> getAll() throws SQLException;
 }
