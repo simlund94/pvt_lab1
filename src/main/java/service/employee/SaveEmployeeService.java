@@ -38,11 +38,15 @@ public class SaveEmployeeService implements ServiceCommand<Employee> {
     public Employee execute() {
         try {
             DbConn.i().open();
-            Employee employeeSaved = employeeDao.save(employee);
-            DbConn.i().close();
-            return employeeSaved;
+            return employeeDao.save(employee);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException("An error occurred.");
+            throw new CleaningManagerServiceException("Error saving employee to the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
         }
     }
 }

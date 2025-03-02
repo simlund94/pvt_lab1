@@ -39,11 +39,15 @@ public class GetRoomByIdService implements ServiceCommand<Room> {
     public Room execute() {
         try {
             DbConn.i().open();
-            Room roomRetrieved = roomDao.get(id);
-            DbConn.i().close();
-            return roomRetrieved;
+            return roomDao.get(id);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error retrieving room from the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package service.room;
 import db.DbConn;
 import domain.Room;
 import repository.RoomDao;
+import repository.SiteDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
 
@@ -39,11 +40,23 @@ public class SaveRoomService implements ServiceCommand<Room> {
     public Room execute() {
         try {
             DbConn.i().open();
-            Room roomSaved = roomDao.save(room);
-            DbConn.i().close();
-            return roomSaved;
+            validateForeignKeys();
+            return roomDao.save(room);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error saving room in the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
+            }
+        }
+    }
+
+    private void validateForeignKeys() throws SQLException {
+        if (!new SiteDao().existsById(room.getSiteId())) {
+            String error = String.format("No site with id %d exists in the database", room.getSiteId());
+            throw new IllegalArgumentException(error);
         }
     }
 

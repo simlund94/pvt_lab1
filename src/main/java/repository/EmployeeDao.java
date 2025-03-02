@@ -117,6 +117,7 @@ public class EmployeeDao implements Dao<Employee> {
         if (changedRows == 1) {
             return this.get(employee.getId());
         } else {
+            String errorMessage = String.format("No employee with the id %d in the database", employee.getId());
             throw new NoSuchElementException("No employee with that id exists in the database");
         }
     }
@@ -166,4 +167,26 @@ public class EmployeeDao implements Dao<Employee> {
         return employees;
     }
 
+    /**
+     * Checks if an employee with the passed id exists in the database.
+     *
+     * @param id The employee id
+     * @return true if present, false otherwise
+     * @throws SQLException if a database error occurs
+     */
+    public boolean existsById(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Id cannot be zero or negative");
+        }
+
+        String query = "SELECT EXISTS(SELECT 1 FROM lab_employees WHERE id = ?)";
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, id);
+        ResultSet rs = prst.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean(1);
+        } else {
+            return false;
+        }
+    }
 }

@@ -52,10 +52,6 @@ public class RoomDao implements Dao<Room> {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
         }
-        if (!new SiteDao().checkIfSiteExists(room.getSiteId())) {
-            String errorMessage = String.format("No site with the id %d exists in the database", room.getSiteId());
-            throw new IllegalArgumentException(errorMessage);
-        }
 
         String query = "INSERT INTO lab_rooms(size_in_sqm, description, site_id) VALUES(?, ?, ?)";
         Room roomSaved = null;
@@ -209,5 +205,28 @@ public class RoomDao implements Dao<Room> {
             throw new IllegalArgumentException("Site cannot be null");
         }
         return getAllRoomsOnSite(site.getId());
+    }
+
+    /**
+     * Checks if a room with the passed id exists in the database.
+     *
+     * @param id The room id
+     * @return true if present, false otherwise
+     * @throws SQLException if a database error occurs
+     */
+    public boolean existsById(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Id cannot be zero or negative");
+        }
+
+        String query = "SELECT EXISTS(SELECT 1 FROM lab_rooms WHERE id = ?)";
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, id);
+        ResultSet rs = prst.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean(1);
+        } else {
+            return false;
+        }
     }
 }

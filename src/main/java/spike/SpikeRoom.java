@@ -23,10 +23,12 @@ public class SpikeRoom {
         Room room2 = new Room(50.0, "A room", 1);
         room2 = new SaveRoomService(room2).execute();
         System.out.println(room2);
+        System.out.println();
 
         // Update room
+        System.out.println("--- Updating room ---");
         room2.setDescription("A fancy room!");
-        room2 = new GetRoomByIdService(room2.getId()).execute();
+        room2 = new UpdateRoomService(room2).execute();
         System.out.println(room2);
 
         // Delete room

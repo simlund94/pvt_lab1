@@ -34,11 +34,15 @@ public class GetAllRoomsService implements ServiceCommand<List<Room>> {
     public List<Room> execute() {
         try {
             DbConn.i().open();
-            List<Room> rooms = roomDao.getAll();
-            DbConn.i().close();
-            return rooms;
+            return roomDao.getAll();
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error retrieving all rooms from the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
         }
     }
 }

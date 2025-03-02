@@ -39,11 +39,15 @@ public class UpdateEmployeeService implements ServiceCommand<Employee> {
     public Employee execute() {
         try {
             DbConn.i().open();
-            Employee updatedEmployee = employeeDao.update(employee);
-            DbConn.i().close();
-            return updatedEmployee;
+            return employeeDao.update(employee);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error updating employee in the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
         }
     }
 }

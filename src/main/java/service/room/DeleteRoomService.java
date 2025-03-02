@@ -3,6 +3,7 @@ package service.room;
 import db.DbConn;
 import domain.Room;
 
+import domain.Site;
 import repository.RoomDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
@@ -40,11 +41,15 @@ public class DeleteRoomService implements ServiceCommand<Boolean> {
     public Boolean execute() {
         try {
             DbConn.i().open();
-            boolean result = roomDao.delete(room);
-            DbConn.i().close();
-            return result;
+            return roomDao.delete(room);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error deleting room in the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
         }
     }
 }

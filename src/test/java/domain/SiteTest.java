@@ -3,11 +3,14 @@ package domain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.room.GetAllRoomsOnSiteService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test suite for the Site class.
@@ -20,6 +23,7 @@ class SiteTest {
     Site siteWithId;
     Site siteWithIdTwin;
     Site siteWithoutId;
+    Site siteWithLazyRooms;
 
     final int validId = 1;
     final int validNoId = 0;
@@ -28,7 +32,8 @@ class SiteTest {
     final int validPostalCode = 80176;
     final String validPostalArea = "Gävle";
     final String validPropertyDesignation = "GÄVLE KUNGSBÄCK 2:8";
-    final List<Room> listOfRooms = List.of(new Room(50.0, "Description", validId));
+    final List<Room> listOfNoIdRooms = List.of(new Room(50.0, "Description", validId));
+    final List<Room> listOfRooms = List.of(new Room(1, 50.0, "Description", validId));
 
     final int negativeId = -1;
     final String stringOver100Characters = "Högskolan i Gävle som ligger i Gävle bredvid kullen och vid Gavleån fast det är rätt " +
@@ -40,9 +45,10 @@ class SiteTest {
 
     @BeforeEach
     void setUp() {
-        siteWithId = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfRooms);
-        siteWithIdTwin = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfRooms);
+        siteWithId = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfNoIdRooms);
+        siteWithIdTwin = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfNoIdRooms);
         siteWithoutId = new Site(validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation);
+        siteWithLazyRooms = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation);
     }
 
     @AfterEach
@@ -67,7 +73,7 @@ class SiteTest {
     void createSiteWithNegativeId() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Site(negativeId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfRooms),
+                () -> new Site(negativeId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfNoIdRooms),
                 "Creating a site with a negative validId should throw an exception"
         );
     }
@@ -215,13 +221,15 @@ class SiteTest {
 
     @Test
     void createSiteWithValidListOfRooms() {
-        assertEquals(listOfRooms, siteWithId.getRooms(), "The list should be equal to " + listOfRooms);
+        assertEquals(listOfNoIdRooms, siteWithId.getRooms(), "The list should be equal to " + listOfNoIdRooms);
     }
 
     @Test
-    void createSiteWithNullListOfRooms() {
-        Site siteToTest = new Site(validId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, null);
-        assertEquals(emptyList, siteToTest.getRooms(), "Passing null into the room-list field should create an empty list");
+    void createSiteWithLazilyInitializedListOfRooms() {
+        GetAllRoomsOnSiteService service = mock(GetAllRoomsOnSiteService.class);
+        when(service.execute()).thenReturn(listOfRooms);
+        List<Room> result = siteWithLazyRooms.getRooms(service);
+        assertEquals(listOfRooms, result, "The list of rooms should be equal with the result.");
     }
 
     @Test

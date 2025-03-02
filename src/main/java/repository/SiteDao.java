@@ -62,7 +62,7 @@ public class SiteDao implements Dao<Site> {
         prst.setInt(3, site.getPostalCode());
         prst.setString(4, site.getPostalArea());
         prst.setString(5, site.getPropertyDesignation());
-        prst.executeUpdate();
+        prst.execute();
 
         rs = prst.getGeneratedKeys();
         if (rs.next()) {
@@ -73,7 +73,7 @@ public class SiteDao implements Dao<Site> {
                     site.getPostalCode(),
                     site.getPostalArea(),
                     site.getPropertyDesignation(),
-                    site.getRooms());
+                    new RoomDao().getAllRoomsOnSite(newId));
         }
         return siteSaved;
     }
@@ -176,19 +176,37 @@ public class SiteDao implements Dao<Site> {
             int postalCode = rs.getInt("postal_code");
             String postalArea = rs.getString("postal_area");
             String propertyDesignation = rs.getString("property_designation");
+            fetchedSites.add(new Site(siteId, name, address, postalCode, postalArea, propertyDesignation));
+        }
+        return fetchedSites;
+    }
+
+    public List<Site> getAllSiteWithRoomsInit() throws SQLException {
+        String query = "SELECT id, name, address, postal_code, postal_area, property_designation FROM lab_sites";
+        List<Site> fetchedSites = new ArrayList<>();
+        RoomDao roomDao = new RoomDao();
+        prst = DbConn.i().prepareStatement(query);
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        while (rs.next()) {
+            int siteId = rs.getInt("id");
+            String name = rs.getString("name");
+            String address = rs.getString("address");
+            int postalCode = rs.getInt("postal_code");
+            String postalArea = rs.getString("postal_area");
+            String propertyDesignation = rs.getString("property_designation");
             List<Room> roomsOnSite = roomDao.getAllRoomsOnSite(siteId);
             fetchedSites.add(new Site(siteId, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite));
         }
         return fetchedSites;
     }
-
     /**
      * Checks if a site with the passed id exists in the database.
      *
      * @param id the Site id
-     * @return True if present, false otherwise
+     * @return true if present, false otherwise
      */
-    public boolean checkIfSiteExists(int id) throws SQLException {
+    public boolean existsById(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Id cannot be zero or negative");
         }
@@ -203,19 +221,6 @@ public class SiteDao implements Dao<Site> {
         } else {
             return false;
         }
-    }
-
-    /**
-     * Checks if a site corresponding to the passed objects id exists in the database.
-     *
-     * @param site The site to check
-     * @return true if present, false otherwise
-     */
-    public boolean checkIfSiteExists(Site site) throws SQLException {
-        if (site == null) {
-            throw new IllegalArgumentException("Site cannot be null");
-        }
-        return checkIfSiteExists(site.getId());
     }
 
 }

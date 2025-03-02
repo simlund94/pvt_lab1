@@ -40,11 +40,15 @@ public class UpdateRoomService implements ServiceCommand<Room> {
     public Room execute() {
         try {
             DbConn.i().open();
-            Room updatedRoom = roomDao.update(room);
-            DbConn.i().close();
-            return updatedRoom;
+            return roomDao.update(room);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error updating room in the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
+            }
         }
     }
 }
