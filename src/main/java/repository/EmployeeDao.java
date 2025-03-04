@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 /**
  * A DAO class for retrieving and persisting Employee records in the database.
@@ -23,10 +22,18 @@ public class EmployeeDao implements Dao<Employee> {
 
     private DbConn dbConn;
 
+    /**
+     * Constructor with injectable database connection instance for mock testing.
+     *
+     * @param dbConn The database connection instance
+     */
     public EmployeeDao(DbConn dbConn) {
         this.dbConn = dbConn;
     }
 
+    /**
+     * Constructor which retrieves an instance of the database connection.
+     */
     public EmployeeDao() {
         dbConn = DbConn.i();
     }
@@ -94,10 +101,10 @@ public class EmployeeDao implements Dao<Employee> {
      * Updates non-final fields of an employee in the database which matches the id of the passed employee object.
      *
      * @param employee An employee object containing new values to overwrite an existing one in the database
-     * @return true if successful, otherwise false
+     * @return The updated Employee record from the database
      */
     @Override
-    public boolean update(Employee employee) throws SQLException {
+    public Employee update(Employee employee) throws SQLException {
         if (employee == null) {
             throw new IllegalArgumentException("Cannot update a null employee.");
         }
@@ -106,17 +113,13 @@ public class EmployeeDao implements Dao<Employee> {
         prst = dbConn.prepareStatement(query);
         prst.setString(1, employee.getName());
         prst.setInt(2, employee.getId());
-        int affectedRows = prst.executeUpdate();
-        int expectedAffectedRows = 1;
-
-        // Om databasen returnerar 1 påverkad rad så lyckades uppdateringen.
-        // Om databasen returnerar 0 rader så misslyckades det.
-        // Om databasen returnerar något annat så har något gått åt skogen, då id ska identifiera
-        // en unik tupel i tabellen.
-        if (affectedRows == expectedAffectedRows) {
-            return true;
+        int changedRows = prst.executeUpdate();
+        if (changedRows == 1) {
+            return this.get(employee.getId());
+        } else {
+            String errorMessage = String.format("No employee with the id %d in the database", employee.getId());
+            throw new NoSuchElementException("No employee with that id exists in the database");
         }
-        return false;
     }
 
     /**
@@ -164,4 +167,26 @@ public class EmployeeDao implements Dao<Employee> {
         return employees;
     }
 
+    /**
+     * Checks if an employee with the passed id exists in the database.
+     *
+     * @param id The employee id
+     * @return true if present, false otherwise
+     * @throws SQLException if a database error occurs
+     */
+    public boolean existsById(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Id cannot be zero or negative");
+        }
+
+        String query = "SELECT EXISTS(SELECT 1 FROM lab_employees WHERE id = ?)";
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, id);
+        ResultSet rs = prst.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean(1);
+        } else {
+            return false;
+        }
+    }
 }

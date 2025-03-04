@@ -2,6 +2,8 @@ package service;
 
 
 /**
+ * Service layer exception to be thrown
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created 2025-02-24

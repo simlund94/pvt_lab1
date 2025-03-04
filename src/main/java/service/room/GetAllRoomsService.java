@@ -1,8 +1,12 @@
 package service.room;
 
+import db.DbConn;
 import domain.Room;
 import repository.RoomDao;
+import service.CleaningManagerServiceException;
+import service.ServiceCommand;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -11,7 +15,7 @@ import java.util.List;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class GetAllRoomsService {
+public class GetAllRoomsService implements ServiceCommand<List<Room>> {
 
     private final RoomDao roomDao;
 
@@ -26,7 +30,19 @@ public class GetAllRoomsService {
         this(new RoomDao());
     }
 
+    @Override
     public List<Room> execute() {
-        return roomDao.getAll();
+        try {
+            DbConn.i().open();
+            return roomDao.getAll();
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException("Error retrieving all rooms from the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
+        }
     }
 }

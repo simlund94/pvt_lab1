@@ -37,14 +37,17 @@ public class GetEmployeeByIdService implements ServiceCommand<Employee> {
     }
 
     public Employee execute() {
-        Employee employeeReturned;
         try {
-            employeeReturned = employeeDao.get(id);
+            DbConn.i().open();
+            return employeeDao.get(id);
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException("An error occured.");
+            throw new CleaningManagerServiceException("Error retrieving employee from the database.");
         } finally {
-            DbConn.i().close();
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
         }
-        return employeeReturned;
     }
 }

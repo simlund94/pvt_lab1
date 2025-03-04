@@ -1,7 +1,12 @@
 package service.room;
 
+import db.DbConn;
 import domain.Room;
 import repository.RoomDao;
+import service.CleaningManagerServiceException;
+import service.ServiceCommand;
+
+import java.sql.SQLException;
 
 /**
  * A command class that encapsulates a request to retrieve a room by id from the database.
@@ -9,7 +14,7 @@ import repository.RoomDao;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class GetRoomByIdService {
+public class GetRoomByIdService implements ServiceCommand<Room> {
 
     private final int id;
 
@@ -30,7 +35,19 @@ public class GetRoomByIdService {
         this(id, new RoomDao());
     }
 
+    @Override
     public Room execute() {
-        return new RoomDao().get(id);
+        try {
+            DbConn.i().open();
+            return roomDao.get(id);
+        } catch (SQLException e) {
+            throw new CleaningManagerServiceException("Error retrieving room from the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
+            }
+        }
     }
 }

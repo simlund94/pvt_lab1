@@ -1,8 +1,10 @@
 package service.employee;
 
+import db.DbConn;
 import domain.Employee;
 import repository.EmployeeDao;
 import service.CleaningManagerServiceException;
+import service.ServiceCommand;
 
 import java.sql.SQLException;
 
@@ -12,7 +14,7 @@ import java.sql.SQLException;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class UpdateEmployeeService {
+public class UpdateEmployeeService implements ServiceCommand<Employee> {
 
     private final Employee employee;
 
@@ -33,12 +35,19 @@ public class UpdateEmployeeService {
         this(employee, new EmployeeDao());
     }
 
-    public boolean execute() {
+    @Override
+    public Employee execute() {
         try {
+            DbConn.i().open();
             return employeeDao.update(employee);
-
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error updating employee in the database.");
+        } finally {
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
+            }
         }
     }
 }

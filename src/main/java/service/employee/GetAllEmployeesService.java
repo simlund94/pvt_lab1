@@ -31,12 +31,16 @@ public class GetAllEmployeesService {
 
     public List<Employee> execute() {
         try {
-            List<Employee> employeesReturned = employeeDao.getAll();
-            return employeesReturned;
+            DbConn.i().open();
+            return employeeDao.getAll();
         } catch (SQLException e) {
-            throw new CleaningManagerServiceException(e.getMessage());
+            throw new CleaningManagerServiceException("Error retrieving all employees from the database.");
         } finally {
-            DbConn.i().close();
+            try {
+                DbConn.i().close();
+            } catch (SQLException e) {
+                System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package domain;
 
-import java.util.ArrayList;
+import service.room.GetAllRoomsOnSiteService;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
  * insertion into the database. </p>
  *
  * @author Simon Lundgren
+ * @version 1.1
  */
 public class Site {
 
@@ -64,6 +66,26 @@ public class Site {
     }
 
     /**
+     * Constructor for retrieving a site record from the database with a generated id and the rooms
+     * field lazily initialized. Calling getRooms() will trigger an initialization of the rooms field.
+     *
+     * @param name                The name of the site, optional
+     * @param address             The address of the site, non-null, max 100 characters
+     * @param postalCode          The postal code, Swedish standard (1xxxx-9xxxx). Non-null.
+     * @param postalArea          The geographical postal location
+     * @param propertyDesignation The land property designation, as defined by Lantmäteriet
+     *                            (ex: GÄVLE VÄSTER 10:5). Non-null, max 50 characters.
+     */
+    public Site(int siteId,
+                String name,
+                String address,
+                int postalCode,
+                String postalArea,
+                String propertyDesignation) {
+        this(siteId, name, address, postalCode, postalArea, propertyDesignation, null);
+    }
+
+    /**
      * Constructor for creating a site object for insertion into a database, where an id will be generated. The list
      * of rooms is set to null.
      *
@@ -81,6 +103,7 @@ public class Site {
                 String propertyDesignation) {
         this(NO_ID, name, address, postalCode, postalArea, propertyDesignation, null);
     }
+
 
     private void setId(int id) {
         if (id < 0) {
@@ -137,12 +160,7 @@ public class Site {
     }
 
     private void setRooms(List<Room> rooms) {
-        if (rooms == null) {
-            // Create empty list if null.
-            this.rooms = new ArrayList<Room>();
-        } else {
-            this.rooms = rooms;
-        }
+        this.rooms = rooms;
     }
 
     public int getId() {
@@ -169,14 +187,34 @@ public class Site {
         return propertyDesignation;
     }
 
+    /**
+     * Returns a list of all rooms connected to the site. If rooms have not been retrieved (the list field is
+     * null), the rooms will be lazily initialized on calling this method. If rooms have been retrieved, but there
+     * were no rooms on the site, an empty list will be returned.
+     *
+     * @return A list of all rooms on the site.
+     */
     public List<Room> getRooms() {
+        return getRooms(new GetAllRoomsOnSiteService(this));
+    }
+
+    /**
+     * Method with DI for mock testing
+     *
+     * @param service The service to be mocked
+     * @return A List of all rooms on the site
+     */
+    public List<Room> getRooms(GetAllRoomsOnSiteService service) {
+        if (rooms == null) {
+            rooms = service.execute();
+        }
         return rooms;
     }
 
     @Override
     public String toString() {
-        return String.format("ID: %d, Name: %s, Address: %s, Postal Code: %s, Postal Area: %s, Property Designation: %s, Rooms: %d",
-                getId(), getName(), getAddress(), getPostalCode(), getPostalArea(), getPropertyDesignation(), getRooms().size());
+        return String.format("ID: %d, Name: %s, Address: %s, Postal Code: %s, Postal Area: %s, Property Designation: %s",
+                getId(), getName(), getAddress(), getPostalCode(), getPostalArea(), getPropertyDesignation());
     }
 
     @Override

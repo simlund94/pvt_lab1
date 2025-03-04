@@ -21,6 +21,24 @@ public class RoomDao implements Dao<Room> {
 
     private PreparedStatement prst = null;
 
+    private DbConn dbConn;
+
+    /**
+     * Constructor with injectable database connection instance for mock testing.
+     *
+     * @param dbConn The database connection instance
+     */
+    public RoomDao(DbConn dbConn) {
+        this.dbConn = dbConn;
+    }
+
+    /**
+     * Constructor which retrieves an instance of the database connection.
+     */
+    public RoomDao() {
+        this(DbConn.i());
+    }
+
     /**
      * Saves a room record in the database corresponding to the passed Room object. The id field of the passed
      * object is ignored. Instead, if successful, this will return a Room object with a generated id from the
@@ -30,30 +48,22 @@ public class RoomDao implements Dao<Room> {
      * @return A room object with a generated id.
      */
     @Override
-    public Room save(Room room) {
+    public Room save(Room room) throws SQLException {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
-        }
-        if (!new SiteDao().checkIfSiteExists(room.getSiteId())) {
-            String error = String.format("No site with the id %d exists in the database", room.getSiteId());
-            throw new IllegalArgumentException(error);
         }
 
         String query = "INSERT INTO lab_rooms(size_in_sqm, description, site_id) VALUES(?, ?, ?)";
         Room roomSaved = null;
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setDouble(1, room.getSizeInSqm());
-            prst.setString(2, room.getDescription());
-            prst.setInt(3, room.getSiteId());
-            prst.executeUpdate();
-            ResultSet rs = prst.getGeneratedKeys();
-            if (rs.next()) {
-                int newId = rs.getInt(1);
-                roomSaved = new Room(newId, room.getSizeInSqm(), room.getDescription(), room.getSiteId());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setDouble(1, room.getSizeInSqm());
+        prst.setString(2, room.getDescription());
+        prst.setInt(3, room.getSiteId());
+        prst.executeUpdate();
+        ResultSet rs = prst.getGeneratedKeys();
+        if (rs.next()) {
+            int newId = rs.getInt(1);
+            roomSaved = new Room(newId, room.getSizeInSqm(), room.getDescription(), room.getSiteId());
         }
         return roomSaved;
     }
@@ -63,33 +73,24 @@ public class RoomDao implements Dao<Room> {
      * Room object id.
      *
      * @param room The Room object containing new values to be updated in the database
-     * @return true if successful, otherwise false
+     * @return The updated Room from the database
      */
     @Override
-    public boolean update(Room room) {
+    public Room update(Room room) throws SQLException {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
         }
 
         String query = "UPDATE lab_rooms SET description = ? WHERE id = ?";
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setString(1, room.getDescription());
-            prst.setInt(2, room.getId());
-            int affectedRows = prst.executeUpdate();
-            int expectedAffectedRows = 1;
-
-            // Om databasen returnerar 1 påverkad rad så lyckades uppdateringen.
-            // Om databasen returnerar 0 så misslyckades det.
-            // Om databasen returnerar något annat så har något gått åt skogen, då id ska identifiera
-            // en unik tupel i tabellen, och därmed misslyckats.
-            if (affectedRows == expectedAffectedRows) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setString(1, room.getDescription());
+        prst.setInt(2, room.getId());
+        int changedRows = prst.executeUpdate();
+        if (changedRows == 1) {
+            return get(room.getId());
+        } else {
+            throw new NoSuchElementException("No Room in the database with that id");
         }
-        return false;
     }
 
     /**
@@ -99,23 +100,19 @@ public class RoomDao implements Dao<Room> {
      * @return true if successful, otherwise false
      */
     @Override
-    public boolean delete(Room room) {
+    public boolean delete(Room room) throws SQLException {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
         }
 
         String query = "DELETE FROM lab_rooms WHERE id = ?";
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setInt(1, room.getId());
-            int affectedRows = prst.executeUpdate();
-            int expectedAffectedRows = 1;
+        prst = DbConn.i().prepareStatement(query);
+        prst.setInt(1, room.getId());
+        int affectedRows = prst.executeUpdate();
+        int expectedAffectedRows = 1;
 
-            if (affectedRows == expectedAffectedRows) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (affectedRows == expectedAffectedRows) {
+            return true;
         }
         return false;
     }
@@ -129,31 +126,25 @@ public class RoomDao implements Dao<Room> {
      * @throws NoSuchElementException if no matching id is found
      */
     @Override
-    public Room get(int id) {
+    public Room get(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("The room id cannot be zero or negative");
         }
 
         String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE id = ?";
-        Room room = null;
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setInt(1, id);
-            ResultSet rs = prst.executeQuery();
-            if (rs.next()) {
-                int fetchedId = rs.getInt("id");
-                double sizeInSqm = rs.getDouble("size_in_sqm");
-                String description = rs.getString("description");
-                int siteId = rs.getInt("site_id");
-                room = new Room(fetchedId, sizeInSqm, description, siteId);
-            } else {
-                String errorMessage = String.format("A room with ID: %d does not exist in the database!", id);
-                throw new NoSuchElementException(errorMessage);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setInt(1, id);
+        ResultSet rs = prst.executeQuery();
+        if (rs.next()) {
+            int fetchedId = rs.getInt("id");
+            double sizeInSqm = rs.getDouble("size_in_sqm");
+            String description = rs.getString("description");
+            int siteId = rs.getInt("site_id");
+            return new Room(fetchedId, sizeInSqm, description, siteId);
+        } else {
+            String errorMessage = String.format("A room with ID: %d does not exist in the database!", id);
+            throw new NoSuchElementException(errorMessage);
         }
-        return room;
     }
 
     /**
@@ -162,21 +153,17 @@ public class RoomDao implements Dao<Room> {
      * @return A List of Room objects of every room record in the database.
      */
     @Override
-    public List<Room> getAll() {
+    public List<Room> getAll() throws SQLException {
         String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms";
         List<Room> rooms = new ArrayList<>();
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            ResultSet rs = prst.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                double sizeInSqm = rs.getDouble("size_in_sqm");
-                String description = rs.getString("description");
-                int siteId = rs.getInt("site_id");
-                rooms.add(new Room(id, sizeInSqm, description, siteId));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        ResultSet rs = prst.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            double sizeInSqm = rs.getDouble("size_in_sqm");
+            String description = rs.getString("description");
+            int siteId = rs.getInt("site_id");
+            rooms.add(new Room(id, sizeInSqm, description, siteId));
         }
         return rooms;
     }
@@ -187,26 +174,22 @@ public class RoomDao implements Dao<Room> {
      * @param siteId The site id
      * @return A List of Room objects associated with the site of the passed id.
      */
-    public List<Room> getAllRoomsOnSite(int siteId) {
+    public List<Room> getAllRoomsOnSite(int siteId) throws SQLException {
         if (siteId <= 0) {
             throw new IllegalArgumentException("SiteId cannot be zero or negative");
         }
 
         String query = "SELECT id, size_in_sqm, description FROM lab_rooms WHERE site_id = ?";
         List<Room> roomsOnSite = new ArrayList<>();
-        try {
-            prst = DbConn.i().prepareStatement(query);
-            prst.setInt(1, siteId);
-            prst.executeQuery();
-            ResultSet rs = prst.getResultSet();
-            while (rs.next()) {
-                int roomId = rs.getInt("id");
-                double sizeInSqm = rs.getDouble("size_in_sqm");
-                String description = rs.getString("description");
-                roomsOnSite.add(new Room(roomId, sizeInSqm, description, siteId));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        prst = DbConn.i().prepareStatement(query);
+        prst.setInt(1, siteId);
+        prst.executeQuery();
+        ResultSet rs = prst.getResultSet();
+        while (rs.next()) {
+            int roomId = rs.getInt("id");
+            double sizeInSqm = rs.getDouble("size_in_sqm");
+            String description = rs.getString("description");
+            roomsOnSite.add(new Room(roomId, sizeInSqm, description, siteId));
         }
         return roomsOnSite;
     }
@@ -217,10 +200,33 @@ public class RoomDao implements Dao<Room> {
      * @param site The site of the rooms
      * @return A List of room objects associated with the site.
      */
-    public List<Room> getAllRoomsOnSite(Site site) {
+    public List<Room> getAllRoomsOnSite(Site site) throws SQLException {
         if (site == null) {
             throw new IllegalArgumentException("Site cannot be null");
         }
         return getAllRoomsOnSite(site.getId());
+    }
+
+    /**
+     * Checks if a room with the passed id exists in the database.
+     *
+     * @param id The room id
+     * @return true if present, false otherwise
+     * @throws SQLException if a database error occurs
+     */
+    public boolean existsById(int id) throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Id cannot be zero or negative");
+        }
+
+        String query = "SELECT EXISTS(SELECT 1 FROM lab_rooms WHERE id = ?)";
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, id);
+        ResultSet rs = prst.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean(1);
+        } else {
+            return false;
+        }
     }
 }

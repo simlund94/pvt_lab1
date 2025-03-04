@@ -37,14 +37,6 @@ public class DbConn {
      * @return A Connection object to the database specified by the static credential fields in the singleton.
      */
     private Connection getConnection() {
-        try {
-            if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
-                System.out.format("Connected to %s database successfully!\n", DB_NAME);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
         return connection;
     }
 
@@ -66,7 +58,7 @@ public class DbConn {
      * @throws SQLException if a database error occurs
      */
     public ResultSet executeQuery(String sqlString) throws SQLException {
-        return this.getStatement(this.getConnection()).executeQuery(sqlString);
+        return this.getStatement(this.connection).executeQuery(sqlString);
     }
 
     /**
@@ -83,17 +75,26 @@ public class DbConn {
     }
 
     /**
-     * Closes the database connection.
+     * Opens the database connection.
+     *
+     * @throws SQLException if a database error occurs
      */
-    public void close() {
-        try {
-            if (statement != null)
-                statement.close();
-            if (connection != null)
-                connection.close();
-        } catch (SQLException e) {
-            System.err.println("Could not close the statement or the connection");
-            System.err.println(e.getMessage());
+    public void open() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
         }
     }
+
+    /**
+     * Closes the database connection.
+     *
+     * @throws SQLException if a database error occurs
+     */
+    public void close() throws SQLException {
+        if (statement != null)
+            statement.close();
+        if (connection != null)
+            connection.close();
+    }
+
 }

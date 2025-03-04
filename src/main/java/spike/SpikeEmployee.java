@@ -25,8 +25,8 @@ public class SpikeEmployee {
 
         // Update employee
         employee2.setName("Kenny Bäck");
-        boolean updateStatus = new UpdateEmployeeService(employee2).execute();
-        System.out.printf("Employee with id %d updated: %s\n", employee2.getId(), updateStatus);
+        Employee updatedEmployee = new UpdateEmployeeService(employee2).execute();
+        System.out.printf("Employee with id %d updated: %s\n", employee2.getId(), updatedEmployee.getName());
         employee2 = new GetEmployeeByIdService(employee2.getId()).execute();
         System.out.println(employee2);
 
