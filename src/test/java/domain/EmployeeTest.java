@@ -84,7 +84,7 @@ class EmployeeTest {
     }
 
     @Test
-    void setTooLongName() {
+    void setTooLongName_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> employeeWithId.setName(tooLongName),
@@ -93,15 +93,11 @@ class EmployeeTest {
     }
 
     @Test
-    void createEmployeeWithTooLowBirthYear() {
+    void createEmployeeWithInvalidBirthYear_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Employee(name, lowInvalidBirthYear),
                 "The employee constructor should throw an exception when passed a birth year below 1900");
-    }
-
-    @Test
-    void createEmployeeWithTooHighBirthYear() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Employee(name, highInvalidBirthYear),

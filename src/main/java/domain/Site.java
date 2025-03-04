@@ -196,7 +196,7 @@ public class Site {
 
     @Override
     public int hashCode() {
-        // rooms field excluded from hash computation to avoid issues with potential lazy init later
+        // rooms field excluded from hash computation to avoid issues with lazy init
         return Objects.hash(id, name, address, postalCode, postalArea, propertyDesignation);
     }
 

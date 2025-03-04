@@ -82,6 +82,9 @@ public class DbConn {
         return this.getConnection().prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS);
     }
 
+    /**
+     * Closes the database connection.
+     */
     public void close() {
         try {
             if (statement != null)
@@ -93,5 +96,4 @@ public class DbConn {
             System.err.println(e.getMessage());
         }
     }
-
 }
