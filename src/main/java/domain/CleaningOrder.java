@@ -154,6 +154,21 @@ public class CleaningOrder {
         return timeScheduled;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (o.getClass() != this.getClass()) return false;
+
+        CleaningOrder that = (CleaningOrder) o;
+        return this.orderId == that.getOrderId() &&
+                this.employeeId == that.getEmployeeId() &&
+                this.roomId == that.getRoomId() &&
+                this.timeScheduled.equals(that.getTimeScheduled()) &&
+                this.timeFinished.equals(that.getTimeFinished().orElse(null)) &&
+                this.orderStatus.equals(that.getOrderStatus());
+    }
+
     public String toString() {
         return String.format("[OrderId: %d, Status: %s, EmployeeId: %d, RoomId %d, Scheduled: %s, Finished: %s]",
                 orderId, orderStatus.toString(), employeeId, roomId,
