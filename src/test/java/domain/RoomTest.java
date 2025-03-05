@@ -45,8 +45,7 @@ class RoomTest {
 
     @Test
     void getValidId() {
-        assertEquals(validId, roomWithId.getId(), "Room validId should be " + validId
-        );
+        assertEquals(validId, roomWithId.getId(), "Room validId should be " + validId);
     }
 
     @Test
@@ -76,7 +75,7 @@ class RoomTest {
     }
 
     @Test
-    void createRoomWithNegativeId() {
+    void createRoomWithNegativeId_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(negativeId, validSize, validRoomDescription, validSiteId),
@@ -85,7 +84,7 @@ class RoomTest {
     }
 
     @Test
-    void createRoomWithNegativeSize() {
+    void createRoomWithNegativeSize_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(validId, negativeSize, validRoomDescription, validSiteId),
@@ -94,7 +93,7 @@ class RoomTest {
     }
 
     @Test
-    void createRoomWithNullDescription() {
+    void createRoomWithNullDescription_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(validId, validSize, null, validSiteId),
@@ -103,7 +102,7 @@ class RoomTest {
     }
 
     @Test
-    void createRoomWithEmptyDescription() {
+    void createRoomWithEmptyDescription_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(validId, validSize, emptyDescription, validSiteId),
@@ -112,7 +111,7 @@ class RoomTest {
     }
 
     @Test
-    void setTooLongDescription() {
+    void setTooLongDescription_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> roomWithId.setDescription(tooLongDescription),
@@ -126,7 +125,7 @@ class RoomTest {
     }
 
     @Test
-    void createRoomWithNegativeSiteId() {
+    void createRoomWithNegativeSiteId_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Room(validId, validSize, validRoomDescription, negativeId),

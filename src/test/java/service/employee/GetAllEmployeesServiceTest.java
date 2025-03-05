@@ -36,7 +36,7 @@ class GetAllEmployeesServiceTest {
     }
 
     @Test
-    void getAllEmployees() throws SQLException {
+    void getAllEmployeesShouldReturnListOfEmployees() throws SQLException {
         GetAllEmployeesService instance = new GetAllEmployeesService(employeeDaoMock);
         List<Employee> result = instance.execute();
 

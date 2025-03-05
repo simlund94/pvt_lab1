@@ -22,24 +22,27 @@ import static org.mockito.Mockito.*;
 class GetEmployeeByIdServiceTest {
 
     Employee employeeToTest;
+    Employee employeeReturned;
 
     EmployeeDao employeeDaoMock;
 
     @BeforeEach
     void setUp() {
         employeeToTest = new Employee(1, "Simon Lundgren", 1994);
+        employeeReturned = new Employee(1, "Simon Lundgren", 1994);
         employeeDaoMock = mock(EmployeeDao.class);
     }
 
     @AfterEach
     void tearDown() {
         employeeToTest = null;
+        employeeReturned = null;
         employeeDaoMock = null;
     }
 
     @Test
     void getEmployeeByValidId() throws SQLException {
-        when(employeeDaoMock.get(1)).thenReturn(employeeToTest);
+        when(employeeDaoMock.get(1)).thenReturn(employeeReturned);
         GetEmployeeByIdService service = new GetEmployeeByIdService(1, employeeDaoMock);
         Employee result = service.execute();
 

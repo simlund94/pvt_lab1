@@ -9,6 +9,8 @@ import service.ServiceCommand;
 import java.sql.SQLException;
 
 /**
+ * A command class that encapsulates a request to check if a site exists in the database.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-02-28
@@ -44,12 +46,14 @@ public class CheckIfSiteExistsService implements ServiceCommand<Boolean> {
             DbConn.i().open();
             return siteDao.existsById(id);
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             throw new CleaningManagerServiceException("An error occurred while checking if the site exists in the DB");
         } finally {
             try {
                 DbConn.i().close();
             } catch (SQLException e) {
                 System.err.println("An error occurred while closing the database connection");
+                System.err.println(e.getMessage());
             }
         }
     }

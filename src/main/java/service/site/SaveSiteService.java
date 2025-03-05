@@ -9,6 +9,8 @@ import service.ServiceCommand;
 import java.sql.SQLException;
 
 /**
+ * A command class that encapsulates a request to save a site to the database.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-02-28
@@ -40,12 +42,14 @@ public class SaveSiteService implements ServiceCommand<Site> {
             DbConn.i().open();
             return siteDao.save(site);
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             throw new CleaningManagerServiceException("An error occurred while saving the site to the database");
         } finally {
             try {
                 DbConn.i().close();
             } catch (SQLException e) {
                 System.err.println("An error occurred while closing the database connection");
+                System.err.println(e.getMessage());
             }
         }
     }

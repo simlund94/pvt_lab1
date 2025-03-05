@@ -9,6 +9,8 @@ import service.ServiceCommand;
 import java.sql.SQLException;
 
 /**
+ * A command class that encapsulates a request to delete a site from the database.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-02-28
@@ -40,12 +42,14 @@ public class DeleteSiteService implements ServiceCommand<Boolean> {
             DbConn.i().open();
             return siteDao.delete(site);
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             throw new CleaningManagerServiceException("An error occurred while deleting the site");
         } finally {
             try {
                 DbConn.i().close();
             } catch (SQLException e) {
                 System.err.println("An error occurred while closing the database connection");
+                System.err.println(e.getMessage());
             }
         }
     }

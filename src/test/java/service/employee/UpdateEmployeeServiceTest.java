@@ -24,12 +24,14 @@ import static org.mockito.Mockito.*;
 class UpdateEmployeeServiceTest {
 
     Employee existingEmployee;
+    Employee employeeReturned;
     Employee unexistantEmployee;
     EmployeeDao employeeDaoMock;
 
     @BeforeEach
     void setUp() {
         existingEmployee = new Employee(1, "Simon Lundgren", 1994);
+        employeeReturned = new Employee(1, "Simon Lundgren", 1994);
         unexistantEmployee = new Employee(2, "Kalle Kaka", 1989);
         employeeDaoMock = mock(EmployeeDao.class);
     }
@@ -37,13 +39,14 @@ class UpdateEmployeeServiceTest {
     @AfterEach
     void tearDown() {
         existingEmployee = null;
+        employeeReturned = null;
         unexistantEmployee = null;
         employeeDaoMock = null;
     }
 
     @Test
     void updateExistingEmployee_ShouldReturnUpdatedEmployee() throws SQLException {
-        when(employeeDaoMock.update(existingEmployee)).thenReturn(existingEmployee);
+        when(employeeDaoMock.update(existingEmployee)).thenReturn(employeeReturned);
         UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee, employeeDaoMock);
         Employee result = service.execute();
 

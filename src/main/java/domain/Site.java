@@ -1,7 +1,9 @@
 package domain;
 
-import service.room.GetAllRoomsOnSiteService;
+import db.DbConn;
+import repository.RoomDao;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -87,7 +89,7 @@ public class Site {
 
     /**
      * Constructor for creating a site object for insertion into a database, where an id will be generated. The list
-     * of rooms is set to null.
+     * of rooms is set to null. Rooms can only be assigned to a site after it has been created in the database.
      *
      * @param name                The name of the site, optional
      * @param address             The address of the site, non-null, max 100 characters
@@ -195,18 +197,35 @@ public class Site {
      * @return A list of all rooms on the site.
      */
     public List<Room> getRooms() {
-        return getRooms(new GetAllRoomsOnSiteService(this));
+        return getRooms(new RoomDao());
     }
 
     /**
-     * Method with DI for mock testing
+     * Returns a list of all rooms connected to the site. If rooms have not been retrieved (the list field is
+     * null), the rooms will be lazily initialized on calling this method. If rooms have been retrieved, but there
+     * were no rooms on the site, an empty list will be returned
+     * <p>
+     * This overloaded method allows a dao to be inserted for mock testing.
      *
-     * @param service The service to be mocked
+     * @param roomDao The Dao to be mocked
      * @return A List of all rooms on the site
      */
-    public List<Room> getRooms(GetAllRoomsOnSiteService service) {
+    public List<Room> getRooms(RoomDao roomDao) {
         if (rooms == null) {
-            rooms = service.execute();
+            try {
+                DbConn.i().open();
+                rooms = roomDao.getAllRoomsOnSite(id);
+            } catch (SQLException e) {
+                System.err.println(e.getMessage());
+                throw new CleaningManagerDomainException("An error occurred while retrieving the rooms from the database");
+            } finally {
+                try {
+                    DbConn.i().close();
+                } catch (SQLException e) {
+                    System.err.println("An error occurred while closing the database connection");
+                    System.err.println(e.getMessage());
+                }
+            }
         }
         return rooms;
     }
@@ -229,7 +248,8 @@ public class Site {
                 this.address.equals(that.getAddress()) &&
                 this.postalCode == that.getPostalCode() &&
                 this.postalArea.equals(that.getPostalArea()) &&
-                this.propertyDesignation.equals(that.getPropertyDesignation());
+                this.propertyDesignation.equals(that.getPropertyDesignation()) &&
+                Objects.equals(this.getRooms(), that.getRooms());
     }
 
     @Override

@@ -2,7 +2,7 @@ package service;
 
 
 /**
- * Service layer exception to be thrown
+ * An exception to signal that a runtime exception has been thrown at the service layer of this application.
  *
  * @author Simon Lundgren
  * @version 1.0

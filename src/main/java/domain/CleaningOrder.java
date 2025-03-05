@@ -1,6 +1,7 @@
 package domain;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -33,7 +34,7 @@ public class CleaningOrder {
      * Här förstår jag att ha både timeFinished och en OrderStatus enum som endast har SCHEDULED och FINISHED
      * bryter mot 3NF (OrderStatus är transitivt beroende på om timeFinished har ett värde eller inte),
      * men jag tänker mig att OrderStatus i framtiden sannolikt kan expanderas till att visa mer information,
-     * såsom IN_PROGRESS för ett mer "live" system och CANCELLED. Detta i sin tur bryter lite mot YAGNI också,
+     * såsom IN_PROGRESS och CANCELLED för ett mer "live" system. Detta i sin tur bryter lite mot YAGNI också,
      * men jag vill mest visa att det är något man kan göra, och att ha det implementerat från grunden är
      * enklare än att göra om det senare.
      */
@@ -167,6 +168,11 @@ public class CleaningOrder {
                 this.timeScheduled.equals(that.getTimeScheduled()) &&
                 this.timeFinished.equals(that.getTimeFinished().orElse(null)) &&
                 this.orderStatus.equals(that.getOrderStatus());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, roomId, employeeId, timeScheduled, timeFinished, orderStatus);
     }
 
     public String toString() {

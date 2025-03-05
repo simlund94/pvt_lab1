@@ -9,6 +9,8 @@ import service.ServiceCommand;
 import java.sql.SQLException;
 
 /**
+ * A service class that encapsulates a request to update a site in the database.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-02-28
@@ -40,12 +42,14 @@ public class UpdateSiteService implements ServiceCommand<Site> {
             DbConn.i().open();
             return siteDao.update(site);
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             throw new CleaningManagerServiceException("An error occurred while updating the site in the database");
         } finally {
             try {
                 DbConn.i().close();
             } catch (SQLException e) {
                 System.err.println("An error occurred while closing the database connection.");
+                System.err.println(e.getMessage());
             }
         }
     }
