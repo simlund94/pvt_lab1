@@ -46,7 +46,7 @@ public class CleaningOrder {
     private static final int NO_ID = 0;
 
     /**
-     * Static variable to clarify that null values are allowed for {@code timeFinished}.
+     * Static constant to clarify that null values are allowed for {@code timeFinished}.
      */
     private static final LocalDateTime NOT_FINISHED = null;
 
@@ -80,7 +80,7 @@ public class CleaningOrder {
 
     /**
      * Constructor for creating a new cleaning order to be inserted into the database.
-     * Defaults the timeScheduled to null and orderStatus to SCHEDULED.
+     * Defaults timeFinished to null and orderStatus to SCHEDULED.
      *
      * @param employeeId    The id of the employee it pertains
      * @param roomId        The id of the room to be cleaned
