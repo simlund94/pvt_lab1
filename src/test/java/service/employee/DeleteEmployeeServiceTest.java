@@ -55,7 +55,7 @@ class DeleteEmployeeServiceTest {
         DeleteEmployeeService service = new DeleteEmployeeService(nonExistantEmployee, employeeDaoMock);
         boolean result = service.execute();
 
-        assertFalse(result, " Delete employee should return false");
+        assertFalse(result, "Delete employee should return false");
 
         verify(employeeDaoMock, times(1)).delete(nonExistantEmployee);
     }

@@ -3,8 +3,9 @@ package domain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.room.GetAllRoomsOnSiteService;
+import repository.RoomDao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +71,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithNegativeId() {
+    void createSiteWithNegativeId_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(negativeId, validName, validAddress, validPostalCode, validPostalArea, validPropertyDesignation, listOfNoIdRooms),
@@ -84,19 +85,19 @@ class SiteTest {
     }
 
     @Test
-    void setNullName() {
+    void setNullName_ShouldThrowException() {
         siteWithId.setName(null);
         assertNull(siteWithId.getName(), "Setting a name to null should be legal");
     }
 
     @Test
-    void setEmptyName() {
+    void setEmptyName_ShouldThrowException() {
         siteWithId.setName(emptyString);
         assertNull(siteWithId.getName(), "Setting a name to an empty string should set null");
     }
 
     @Test
-    void setTooLongName() {
+    void setTooLongName_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> siteWithId.setName(stringOver100Characters),
@@ -110,7 +111,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithNullAddress() {
+    void createSiteWithNullAddress_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, null, validPostalCode, validPostalArea, validPropertyDesignation),
@@ -119,7 +120,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithEmptyAddress() {
+    void createSiteWithEmptyAddress_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, emptyString, validPostalCode, validPostalArea, validPropertyDesignation),
@@ -128,7 +129,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithTooLongAddress() {
+    void createSiteWithTooLongAddress_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, stringOver100Characters, validPostalCode, validPostalArea, validPropertyDesignation),
@@ -142,7 +143,7 @@ class SiteTest {
     }
 
     @Test
-    void createInvalidPostalCode() {
+    void createInvalidPostalCode_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, tooLowPostalCode, validPostalArea, validPropertyDesignation),
@@ -161,7 +162,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithNullPostalArea() {
+    void createSiteWithNullPostalArea_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, validPostalCode, null, validPropertyDesignation),
@@ -170,7 +171,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithEmptyPostalArea() {
+    void createSiteWithEmptyPostalArea_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, validPostalCode, emptyString, validPropertyDesignation),
@@ -179,7 +180,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithTooLongPostalArea() {
+    void createSiteWithTooLongPostalArea_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, validPostalCode, stringOver100Characters, validPropertyDesignation),
@@ -193,7 +194,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithNullPropertyDesignation() {
+    void createSiteWithNullPropertyDesignation_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, validPostalCode, validPostalArea, null),
@@ -202,7 +203,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithEmptyPropertyDesignation() {
+    void createSiteWithEmptyPropertyDesignation_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, validPostalCode, validPostalArea, emptyString),
@@ -211,7 +212,7 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithTooLongPropertyDesignation() {
+    void createSiteWithTooLongPropertyDesignation_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Site(validName, validAddress, validPostalCode, validPostalArea, stringOver100Characters),
@@ -225,11 +226,19 @@ class SiteTest {
     }
 
     @Test
-    void createSiteWithLazilyInitializedListOfRooms() {
-        GetAllRoomsOnSiteService service = mock(GetAllRoomsOnSiteService.class);
-        when(service.execute()).thenReturn(listOfRooms);
-        List<Room> result = siteWithLazyRooms.getRooms(service);
+    void createSiteWithLazilyInitializedListOfRooms() throws SQLException {
+        RoomDao roomDao = mock(RoomDao.class);
+        when(roomDao.getAllRoomsOnSite(siteWithLazyRooms.getId())).thenReturn(listOfRooms);
+        List<Room> result = siteWithLazyRooms.getRooms(roomDao);
         assertEquals(listOfRooms, result, "The list of rooms should be equal with the result.");
+    }
+
+    @Test
+    void getRoomsFromSiteNotSavedInDatabase_ShouldThrowException() {
+        assertThrows(IllegalStateException.class,
+                () -> siteWithoutId.getRooms(),
+                "Calling getRooms() on an unsaved Site should throw an exception"
+        );
     }
 
     @Test

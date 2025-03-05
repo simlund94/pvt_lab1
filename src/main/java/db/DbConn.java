@@ -31,8 +31,7 @@ public class DbConn {
     }
 
     /**
-     * Returns a connection to the database, will automatically re-establish connection if
-     * the connection hasn't yet been opened, or if it has been closed/timed-out since last time.
+     * Returns the connection to the database.
      *
      * @return A Connection object to the database specified by the static credential fields in the singleton.
      */

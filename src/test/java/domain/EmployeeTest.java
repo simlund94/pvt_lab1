@@ -68,7 +68,7 @@ class EmployeeTest {
     }
 
     @Test
-    void createEmployeeWithNullName() {
+    void createEmployeeWithNullName_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Employee(null, birthYear),
@@ -76,7 +76,7 @@ class EmployeeTest {
     }
 
     @Test
-    void createEmployeeWithEmptyName() {
+    void createEmployeeWithEmptyName_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Employee(emptyName, birthYear),
@@ -105,7 +105,7 @@ class EmployeeTest {
     }
 
     @Test
-    void createEmployeeWithNegativeId() {
+    void createEmployeeWithNegativeId_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Employee(negativeId, name, birthYear),
