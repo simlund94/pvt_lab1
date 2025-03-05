@@ -1,10 +1,6 @@
 package spike;
 
-import db.DbConn;
 import domain.Site;
-import repository.Dao;
-import repository.SiteDao;
-import service.room.DeleteRoomService;
 import service.site.*;
 
 import java.sql.SQLException;

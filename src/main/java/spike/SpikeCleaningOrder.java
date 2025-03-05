@@ -1,6 +1,5 @@
 package spike;
 
-import db.DbConn;
 import domain.CleaningOrder;
 import domain.OrderStatus;
 import service.cleaningorder.*;

@@ -234,6 +234,14 @@ class SiteTest {
     }
 
     @Test
+    void getRoomsFromSiteNotSavedInDatabase_ShouldThrowException() {
+        assertThrows(IllegalStateException.class,
+                () -> siteWithoutId.getRooms(),
+                "Calling getRooms() on an unsaved Site should throw an exception"
+        );
+    }
+
+    @Test
     void equalsShouldReturnTrueWhenSitesAreEqual() {
         assertEquals(siteWithId, siteWithIdTwin,
                 "Two semantically identical sites should return true from equals()");

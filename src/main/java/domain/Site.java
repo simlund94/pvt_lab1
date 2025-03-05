@@ -211,6 +211,9 @@ public class Site {
      * @return A List of all rooms on the site
      */
     public List<Room> getRooms(RoomDao roomDao) {
+        if (this.id == 0) {
+            throw new IllegalStateException("Cannot call getRooms() on a Site object that has not been saved to the database");
+        }
         if (rooms == null) {
             try {
                 DbConn.i().open();
