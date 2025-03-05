@@ -2,7 +2,7 @@ package service.employee;
 
 import db.DbConn;
 import domain.Employee;
-import repository.EmployeeDao;
+import repository.DaoFactory;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
 
@@ -18,27 +18,27 @@ public class SaveEmployeeService implements ServiceCommand<Employee> {
 
     private final Employee employee;
 
-    private final EmployeeDao employeeDao;
+    private final DaoFactory daoFactory;
 
-    public SaveEmployeeService(Employee employee, EmployeeDao employeeDao) {
+    public SaveEmployeeService(Employee employee, DaoFactory daoFactory) {
         if (employee == null) {
             throw new IllegalArgumentException("Employee cannot be null");
         }
-        if (employeeDao == null) {
+        if (daoFactory == null) {
             throw new IllegalArgumentException("EmployeeDAO cannot be null");
         }
         this.employee = employee;
-        this.employeeDao = employeeDao;
+        this.daoFactory = daoFactory;
     }
 
     public SaveEmployeeService(Employee employee) {
-        this(employee, new EmployeeDao());
+        this(employee, new DaoFactory());
     }
 
     public Employee execute() {
         try {
             DbConn.i().open();
-            return employeeDao.save(employee);
+            return daoFactory.getEmployeeDao().save(employee);
         } catch (SQLException e) {
             throw new CleaningManagerServiceException("Error saving employee to the database.");
         } finally {
@@ -48,5 +48,10 @@ public class SaveEmployeeService implements ServiceCommand<Employee> {
                 System.err.println("An error occurred while closing the database connection: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

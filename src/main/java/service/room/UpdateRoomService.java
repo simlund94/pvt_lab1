@@ -2,10 +2,10 @@ package service.room;
 
 import db.DbConn;
 import domain.Room;
+import repository.DaoFactory;
 import repository.RoomDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
-import service.employee.UpdateEmployeeService;
 
 import java.sql.SQLException;
 
@@ -50,5 +50,10 @@ public class UpdateRoomService implements ServiceCommand<Room> {
                 System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

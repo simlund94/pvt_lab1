@@ -3,6 +3,7 @@ package service.cleaningorder;
 import db.DbConn;
 import domain.CleaningOrder;
 import repository.CleaningOrderDao;
+import repository.DaoFactory;
 import repository.EmployeeDao;
 import repository.RoomDao;
 import service.CleaningManagerServiceException;
@@ -58,6 +59,11 @@ public class SaveCleaningOrderService implements ServiceCommand<CleaningOrder> {
                 System.err.println(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 
     private void validateForeignKeys() throws SQLException {

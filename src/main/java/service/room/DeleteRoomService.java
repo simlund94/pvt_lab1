@@ -3,7 +3,7 @@ package service.room;
 import db.DbConn;
 import domain.Room;
 
-import domain.Site;
+import repository.DaoFactory;
 import repository.RoomDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
@@ -51,5 +51,10 @@ public class DeleteRoomService implements ServiceCommand<Boolean> {
                 System.err.println("An error occurred while closing the database connection: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

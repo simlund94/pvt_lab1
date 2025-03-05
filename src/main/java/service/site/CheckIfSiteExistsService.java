@@ -2,6 +2,7 @@ package service.site;
 
 import db.DbConn;
 import domain.Site;
+import repository.DaoFactory;
 import repository.SiteDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
@@ -52,5 +53,10 @@ public class CheckIfSiteExistsService implements ServiceCommand<Boolean> {
                 System.err.println("An error occurred while closing the database connection");
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

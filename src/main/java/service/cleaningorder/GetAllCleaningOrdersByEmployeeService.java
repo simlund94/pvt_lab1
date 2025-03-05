@@ -4,6 +4,7 @@ import db.DbConn;
 import domain.CleaningOrder;
 import domain.Employee;
 import repository.CleaningOrderDao;
+import repository.DaoFactory;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
 
@@ -55,5 +56,10 @@ public class GetAllCleaningOrdersByEmployeeService implements ServiceCommand<Lis
                 System.err.println(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

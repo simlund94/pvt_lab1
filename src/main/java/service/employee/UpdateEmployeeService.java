@@ -2,6 +2,7 @@ package service.employee;
 
 import db.DbConn;
 import domain.Employee;
+import repository.DaoFactory;
 import repository.EmployeeDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
@@ -49,6 +50,11 @@ public class UpdateEmployeeService implements ServiceCommand<Employee> {
                 System.err.println("An error occurred while closing the database connection: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }
 

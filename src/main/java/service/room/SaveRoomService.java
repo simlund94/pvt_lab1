@@ -2,6 +2,7 @@ package service.room;
 
 import db.DbConn;
 import domain.Room;
+import repository.DaoFactory;
 import repository.RoomDao;
 import repository.SiteDao;
 import service.CleaningManagerServiceException;
@@ -51,6 +52,11 @@ public class SaveRoomService implements ServiceCommand<Room> {
                 System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 
     private void validateForeignKeys() throws SQLException {

@@ -3,6 +3,7 @@ package service.cleaningorder;
 import db.DbConn;
 import domain.CleaningOrder;
 import repository.CleaningOrderDao;
+import repository.DaoFactory;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
 
@@ -52,5 +53,10 @@ public class UpdateCleaningOrderService implements ServiceCommand<CleaningOrder>
                 System.err.println(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

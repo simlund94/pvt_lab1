@@ -39,6 +39,6 @@ public class SpikeRoom {
         System.out.println();
         List<Room> allRooms = new GetAllRoomsService().execute();
         System.out.println("--- All rooms currently in the database: ");
-        allRooms.stream().forEach(r -> System.out.println(r));
+        allRooms.forEach(r -> System.out.println(r));
     }
 }

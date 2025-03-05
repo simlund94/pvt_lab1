@@ -2,6 +2,7 @@ package service.site;
 
 import db.DbConn;
 import domain.Site;
+import repository.DaoFactory;
 import repository.SiteDao;
 import service.CleaningManagerServiceException;
 import service.ServiceCommand;
@@ -40,5 +41,10 @@ public class GetAllSitesService implements ServiceCommand<List<Site>> {
                 System.err.println("An error occurred while closing the database connection");
             }
         }
+    }
+
+    @Override
+    public void init(DaoFactory daoFactory, DbConn dbConn) {
+
     }
 }

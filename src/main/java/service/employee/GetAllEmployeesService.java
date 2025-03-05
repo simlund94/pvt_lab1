@@ -2,8 +2,10 @@ package service.employee;
 
 import db.DbConn;
 import domain.Employee;
-import repository.EmployeeDao;
+import repository.DaoFactory;
+import service.BaseService;
 import service.CleaningManagerServiceException;
+import service.ServiceCommand;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -14,33 +16,21 @@ import java.util.List;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class GetAllEmployeesService {
+public class GetAllEmployeesService extends BaseService<List<Employee>> {
 
-    private final EmployeeDao employeeDao;
-
-    public GetAllEmployeesService(EmployeeDao employeeDao) {
-        if (employeeDao == null) {
+    public GetAllEmployeesService(DaoFactory daoFactory) {
+        if (daoFactory == null) {
             throw new IllegalArgumentException("EmployeeDAO cannot be null");
         }
-        this.employeeDao = employeeDao;
+        this.daoFactory = daoFactory;
     }
 
     public GetAllEmployeesService() {
-        this(new EmployeeDao());
+        this(new DaoFactory());
     }
 
-    public List<Employee> execute() {
-        try {
-            DbConn.i().open();
-            return employeeDao.getAll();
-        } catch (SQLException e) {
-            throw new CleaningManagerServiceException("Error retrieving all employees from the database.");
-        } finally {
-            try {
-                DbConn.i().close();
-            } catch (SQLException e) {
-                System.err.println("An error occurred trying to close the database connection: " + e.getMessage());
-            }
-        }
+    public List<Employee> execute() throws SQLException {
+        return daoFactory.getEmployeeDao().getAll();
     }
+
 }
