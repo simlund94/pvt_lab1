@@ -1,13 +1,11 @@
 package service.cleaningorder;
 
-import db.DbConn;
 import domain.CleaningOrder;
 import repository.CleaningOrderDao;
-import repository.DaoFactory;
+import repository.DaoFactory.*;
 import repository.EmployeeDao;
 import repository.RoomDao;
-import service.CleaningManagerServiceException;
-import service.ServiceCommand;
+import service.BaseService;
 
 import java.sql.SQLException;
 
@@ -20,50 +18,22 @@ import java.sql.SQLException;
  * @version 1.0
  * Created on: 2025-03-02
  */
-public class SaveCleaningOrderService implements ServiceCommand<CleaningOrder> {
+public class SaveCleaningOrderService extends BaseService<CleaningOrder> {
 
     private final CleaningOrder cleaningOrder;
 
-    private final CleaningOrderDao cleaningOrderDao;
-
-    public SaveCleaningOrderService(CleaningOrder cleaningOrder, CleaningOrderDao cleaningOrderDao) {
+    public SaveCleaningOrderService(CleaningOrder cleaningOrder) {
         if (cleaningOrder == null) {
             throw new IllegalArgumentException("Cleaning order cannot be null");
         }
-        if (cleaningOrderDao == null) {
-            throw new IllegalArgumentException("Dao cannot be null");
-        }
 
         this.cleaningOrder = cleaningOrder;
-        this.cleaningOrderDao = cleaningOrderDao;
-    }
-
-    public SaveCleaningOrderService(CleaningOrder cleaningOrder) {
-        this(cleaningOrder, new CleaningOrderDao());
     }
 
     @Override
-    public CleaningOrder execute() {
-        try {
-            DbConn.i().open();
-            validateForeignKeys();
-            return cleaningOrderDao.save(cleaningOrder);
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new CleaningManagerServiceException("An error occurred while saving the cleaning order to the database");
-        } finally {
-            try {
-                DbConn.i().close();
-            } catch (SQLException e) {
-                System.err.println("An error occurred while closing the database connection");
-                System.err.println(e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public void init(DaoFactory daoFactory, DbConn dbConn) {
-
+    protected CleaningOrder executeImplementation() throws SQLException {
+        validateForeignKeys();
+        return daoFactory.<CleaningOrderDao>get(FactoryType.CLEANING_ORDER).save(cleaningOrder);
     }
 
     private void validateForeignKeys() throws SQLException {
@@ -76,4 +46,5 @@ public class SaveCleaningOrderService implements ServiceCommand<CleaningOrder> {
             throw new IllegalArgumentException(error);
         }
     }
+
 }

@@ -6,6 +6,8 @@ import repository.DaoFactory;
 import java.sql.SQLException;
 
 /**
+ * A base class to centralise common fields and operations for the Service Command classes.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created 2025-03-04

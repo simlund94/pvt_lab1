@@ -29,7 +29,7 @@ public class UpdateEmployeeService extends BaseService<Employee> {
 
     @Override
     public Employee executeImplementation() throws SQLException {
-        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).save(employee);
+        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).update(employee);
     }
 }
 

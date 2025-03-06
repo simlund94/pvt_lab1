@@ -1,9 +1,12 @@
 package service.employee;
 
+import db.DbConn;
 import domain.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import repository.DaoFactory;
+import repository.DaoFactory.*;
 import repository.EmployeeDao;
 
 import java.sql.SQLException;
@@ -25,12 +28,16 @@ class GetEmployeeByIdServiceTest {
     Employee employeeReturned;
 
     EmployeeDao employeeDaoMock;
+    DbConn dbConnMock;
+    DaoFactory daoFactoryMock;
 
     @BeforeEach
     void setUp() {
         employeeToTest = new Employee(1, "Simon Lundgren", 1994);
         employeeReturned = new Employee(1, "Simon Lundgren", 1994);
         employeeDaoMock = mock(EmployeeDao.class);
+        daoFactoryMock = mock(DaoFactory.class);
+        dbConnMock = mock(DbConn.class);
     }
 
     @AfterEach
@@ -38,12 +45,16 @@ class GetEmployeeByIdServiceTest {
         employeeToTest = null;
         employeeReturned = null;
         employeeDaoMock = null;
+        daoFactoryMock = null;
+        dbConnMock = null;
     }
 
     @Test
     void getEmployeeByValidId() throws SQLException {
+        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.get(1)).thenReturn(employeeReturned);
         GetEmployeeByIdService service = new GetEmployeeByIdService(1);
+        service.init(daoFactoryMock, dbConnMock);
         Employee result = service.execute();
 
         assertNotNull(result, "The method should not return null");
@@ -54,8 +65,10 @@ class GetEmployeeByIdServiceTest {
 
     @Test
     void getNonExistingEmployee_ShouldThrowException() throws SQLException {
+        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.get(2)).thenThrow(NoSuchElementException.class);
         GetEmployeeByIdService service = new GetEmployeeByIdService(2);
+        service.init(daoFactoryMock, dbConnMock);
 
         assertThrows(
                 NoSuchElementException.class,

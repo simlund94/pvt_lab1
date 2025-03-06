@@ -1,12 +1,13 @@
 package service.employee;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud;
+import db.DbConn;
 import domain.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import repository.DaoFactory;
+import repository.DaoFactory.*;
 import repository.EmployeeDao;
-import service.CleaningManagerServiceException;
 
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
@@ -27,6 +28,8 @@ class UpdateEmployeeServiceTest {
     Employee employeeReturned;
     Employee unexistantEmployee;
     EmployeeDao employeeDaoMock;
+    DaoFactory daoFactoryMock;
+    DbConn dbConnMock;
 
     @BeforeEach
     void setUp() {
@@ -34,6 +37,8 @@ class UpdateEmployeeServiceTest {
         employeeReturned = new Employee(1, "Simon Lundgren", 1994);
         unexistantEmployee = new Employee(2, "Kalle Kaka", 1989);
         employeeDaoMock = mock(EmployeeDao.class);
+        daoFactoryMock = mock(DaoFactory.class);
+        dbConnMock = mock(DbConn.class);
     }
 
     @AfterEach
@@ -42,23 +47,29 @@ class UpdateEmployeeServiceTest {
         employeeReturned = null;
         unexistantEmployee = null;
         employeeDaoMock = null;
+        daoFactoryMock = null;
+        dbConnMock = null;
     }
 
     @Test
     void updateExistingEmployee_ShouldReturnUpdatedEmployee() throws SQLException {
+        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.update(existingEmployee)).thenReturn(employeeReturned);
         UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee);
+        service.init(daoFactoryMock, dbConnMock);
         Employee result = service.execute();
 
-        assertEquals(existingEmployee, result, "The result should be true");
+        assertEquals(employeeReturned, result, "The employee returned should be equal to the one passed in");
 
         verify(employeeDaoMock, times(1)).update(existingEmployee);
     }
 
     @Test
     void updateNonExistantEmployee_ShouldThrowException() throws SQLException {
+        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.update(unexistantEmployee)).thenThrow(NoSuchElementException.class);
         UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee);
+        service.init(daoFactoryMock, dbConnMock);
         assertThrows(
                 NoSuchElementException.class,
                 () -> service.execute(),

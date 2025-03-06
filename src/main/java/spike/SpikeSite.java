@@ -16,7 +16,6 @@ public class SpikeSite {
 
     public static void main(String[] args) throws SQLException {
 
-
         // get site
         Site site1 = new GetSiteByIdService(1).execute();
         System.out.println(site1);

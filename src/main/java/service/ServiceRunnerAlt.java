@@ -10,6 +10,7 @@ import java.sql.SQLException;
  * @version 1.0
  * Created 2025-03-04
  */
+@Deprecated
 public class ServiceRunnerAlt<T> {
 
     private ServiceCommand<T> service;

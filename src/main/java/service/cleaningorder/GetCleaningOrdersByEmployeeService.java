@@ -19,13 +19,13 @@ import java.util.List;
  * @version 1.0
  * Created on: 2025-03-02
  */
-public class GetAllCleaningOrdersByEmployeeService implements ServiceCommand<List<CleaningOrder>> {
+public class GetCleaningOrdersByEmployeeService implements ServiceCommand<List<CleaningOrder>> {
 
     private final Employee employee;
 
     private final CleaningOrderDao cleaningOrderDao;
 
-    public GetAllCleaningOrdersByEmployeeService(Employee employee, CleaningOrderDao cleaningOrderDao) {
+    public GetCleaningOrdersByEmployeeService(Employee employee, CleaningOrderDao cleaningOrderDao) {
         if (employee == null) {
             throw new IllegalArgumentException("Employee cannot be null");
         }
@@ -36,7 +36,7 @@ public class GetAllCleaningOrdersByEmployeeService implements ServiceCommand<Lis
         this.cleaningOrderDao = cleaningOrderDao;
     }
 
-    public GetAllCleaningOrdersByEmployeeService(Employee employee) {
+    public GetCleaningOrdersByEmployeeService(Employee employee) {
         this(employee, new CleaningOrderDao());
     }
 

@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Demonstrator for service layer classes that mainly interact with the Cleaning Order class.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-02-27
