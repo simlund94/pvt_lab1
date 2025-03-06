@@ -1,9 +1,11 @@
 package service.employee;
 
+import db.DbConn;
 import domain.Employee;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import repository.DaoFactory;
 import repository.EmployeeDao;
 
 import java.sql.SQLException;
@@ -24,6 +26,8 @@ class GetAllEmployeesServiceTest {
     List<Employee> employees;
 
     EmployeeDao employeeDaoMock;
+    DaoFactory daoFactoryMock;
+    DbConn dbConnMock;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -32,13 +36,17 @@ class GetAllEmployeesServiceTest {
                 new Employee(2, "Niklas Andersson", 1991));
 
         employeeDaoMock = mock(EmployeeDao.class);
-        when(employeeDaoMock.getAll()).thenReturn(employees);
+        daoFactoryMock = mock(DaoFactory.class);
+        dbConnMock = mock(DbConn.class);
     }
 
     @Test
     void getAllEmployeesShouldReturnListOfEmployees() throws SQLException {
-        GetAllEmployeesService instance = new GetAllEmployeesService(employeeDaoMock);
-        List<Employee> result = instance.execute();
+        when(daoFactoryMock.get(DaoFactory.FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(employeeDaoMock.getAll()).thenReturn(employees);
+        GetAllEmployeesService service = new GetAllEmployeesService();
+        service.init(daoFactoryMock, dbConnMock);
+        List<Employee> result = service.execute();
 
         assertNotNull(result, "The list returned should not be null");
         assertEquals(2, result.size(), "The list should have size 2");
@@ -46,6 +54,5 @@ class GetAllEmployeesServiceTest {
                 "The list should correspond to the mocked list");
 
         verify(employeeDaoMock, times(1)).getAll();
-
     }
 }

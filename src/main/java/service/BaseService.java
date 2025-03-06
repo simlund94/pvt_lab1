@@ -22,6 +22,28 @@ public abstract class BaseService<T> implements ServiceCommand<T> {
     }
 
     @Override
-    public abstract T execute() throws SQLException;
+    public final T execute() throws SQLException {
+        checkResources();
+        return executeImplementation();
+    }
+
+    /**
+     * The implementation of the command operation, to be implemented by all inheriting  classes.
+     * This method is in turn called in the body of the {@link #execute()} method with checks
+     * that the proper resources have been initialized.
+     *
+     * @return The result of the operation
+     * @throws SQLException if a database error occurs
+     */
+    protected abstract T executeImplementation() throws SQLException;
+
+    private void checkResources() {
+        if (dbConn == null) {
+            throw new IllegalStateException("DbConn was null. The init() method must be called correctly before calling execute()");
+        }
+        if (daoFactory == null) {
+            throw new IllegalStateException("DaoFactory was null. The init() method must be called correctly before calling execute()");
+        }
+    }
 
 }

@@ -1,11 +1,9 @@
 package service.employee;
 
-import db.DbConn;
 import domain.Employee;
-import repository.DaoFactory;
+import repository.DaoFactory.*;
+import repository.EmployeeDao;
 import service.BaseService;
-import service.CleaningManagerServiceException;
-import service.ServiceCommand;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,19 +16,9 @@ import java.util.List;
  */
 public class GetAllEmployeesService extends BaseService<List<Employee>> {
 
-    public GetAllEmployeesService(DaoFactory daoFactory) {
-        if (daoFactory == null) {
-            throw new IllegalArgumentException("EmployeeDAO cannot be null");
-        }
-        this.daoFactory = daoFactory;
-    }
-
-    public GetAllEmployeesService() {
-        this(new DaoFactory());
-    }
-
-    public List<Employee> execute() throws SQLException {
-        return daoFactory.getEmployeeDao().getAll();
+    @Override
+    public List<Employee> executeImplementation() throws SQLException {
+        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).getAll();
     }
 
 }

@@ -7,22 +7,6 @@ package repository;
  */
 public class DaoFactory {
 
-    public EmployeeDao getEmployeeDao() {
-        return new EmployeeDao();
-    }
-
-    public RoomDao getRoomDao() {
-        return new RoomDao();
-    }
-
-    public SiteDao getSiteDao() {
-        return new SiteDao();
-    }
-
-    public CleaningOrderDao getCleaningOrderDao() {
-        return new CleaningOrderDao();
-    }
-
     public <T extends Dao<?>> T get(FactoryType factoryType) {
         return (T) factoryType.createDao();
     }

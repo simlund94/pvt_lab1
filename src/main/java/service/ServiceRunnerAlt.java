@@ -10,9 +10,15 @@ import java.sql.SQLException;
  * @version 1.0
  * Created 2025-03-04
  */
-public class ServiceRunner2 {
+public class ServiceRunnerAlt<T> {
 
-    public <T> T execute(ServiceCommand<T> service) {
+    private ServiceCommand<T> service;
+
+    public void setCommand(ServiceCommand<T> service) {
+        this.service = service;
+    }
+
+    public T execute() {
         try {
             DbConn.i().open();
             service.init(new DaoFactory(), DbConn.i());

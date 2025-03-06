@@ -43,7 +43,7 @@ class GetEmployeeByIdServiceTest {
     @Test
     void getEmployeeByValidId() throws SQLException {
         when(employeeDaoMock.get(1)).thenReturn(employeeReturned);
-        GetEmployeeByIdService service = new GetEmployeeByIdService(1, employeeDaoMock);
+        GetEmployeeByIdService service = new GetEmployeeByIdService(1);
         Employee result = service.execute();
 
         assertNotNull(result, "The method should not return null");
@@ -55,7 +55,7 @@ class GetEmployeeByIdServiceTest {
     @Test
     void getNonExistingEmployee_ShouldThrowException() throws SQLException {
         when(employeeDaoMock.get(2)).thenThrow(NoSuchElementException.class);
-        GetEmployeeByIdService service = new GetEmployeeByIdService(2, employeeDaoMock);
+        GetEmployeeByIdService service = new GetEmployeeByIdService(2);
 
         assertThrows(
                 NoSuchElementException.class,
@@ -70,7 +70,7 @@ class GetEmployeeByIdServiceTest {
     void getEmployeeWithNonValidId_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new GetEmployeeByIdService(-1, employeeDaoMock),
+                () -> new GetEmployeeByIdService(-1),
                 "Trying to pass a negative id should throw an exception"
         );
     }

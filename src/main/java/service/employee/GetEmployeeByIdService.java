@@ -1,8 +1,9 @@
 package service.employee;
 
 import domain.Employee;
+import repository.DaoFactory.*;
+import repository.EmployeeDao;
 import service.BaseService;
-import service.CleaningManagerServiceException;
 
 import java.sql.SQLException;
 
@@ -23,20 +24,9 @@ public class GetEmployeeByIdService extends BaseService<Employee> {
         this.id = id;
     }
 
-    public Employee execute() {
-        try {
-            dbConn.open();
-            return daoFactory.getEmployeeDao().get(id);
-        } catch (SQLException e) {
-            throw new CleaningManagerServiceException("Error retrieving employee from the database.");
-        } finally {
-            try {
-                dbConn.close();
-            } catch (SQLException e) {
-                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
-                System.err.println(e.getErrorCode());
-            }
-        }
+    @Override
+    public Employee executeImplementation() throws SQLException {
+        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).get(id);
     }
 
 }

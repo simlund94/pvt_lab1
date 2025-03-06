@@ -41,7 +41,7 @@ class SaveEmployeeServiceTest {
     @Test
     void saveValidEmployee_ShouldReturnFullEmployee() throws SQLException {
         when(employeeDaoMock.save(employeeToSave)).thenReturn(employeeReturn);
-        SaveEmployeeService service = new SaveEmployeeService(employeeToSave, employeeDaoMock);
+        SaveEmployeeService service = new SaveEmployeeService(employeeToSave);
         Employee result = service.execute();
 
         assertEquals(employeeReturn, result, "Employee returned is not the same as expected");
@@ -53,7 +53,7 @@ class SaveEmployeeServiceTest {
     void saveNullEmployee_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new SaveEmployeeService(null, employeeDaoMock),
+                () -> new SaveEmployeeService(null),
                 "Passing a null employee should throw an exception"
         );
     }

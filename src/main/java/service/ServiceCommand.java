@@ -17,9 +17,15 @@ public interface ServiceCommand<T> {
     /**
      * Executes the implemented operation, and returns the result of the operation.
      *
-     * @return The return value of the operation
+     * @return The result of the operation
      */
     T execute() throws SQLException;
 
+    /**
+     * Initializes the resources needed to perform the implemented operation
+     *
+     * @param daoFactory The daoFactory to produce the correct DAO
+     * @param dbConn The database singleton instance
+     */
     void init(DaoFactory daoFactory, DbConn dbConn);
 }

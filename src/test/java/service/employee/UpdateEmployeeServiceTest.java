@@ -47,7 +47,7 @@ class UpdateEmployeeServiceTest {
     @Test
     void updateExistingEmployee_ShouldReturnUpdatedEmployee() throws SQLException {
         when(employeeDaoMock.update(existingEmployee)).thenReturn(employeeReturned);
-        UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee, employeeDaoMock);
+        UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee);
         Employee result = service.execute();
 
         assertEquals(existingEmployee, result, "The result should be true");
@@ -58,7 +58,7 @@ class UpdateEmployeeServiceTest {
     @Test
     void updateNonExistantEmployee_ShouldThrowException() throws SQLException {
         when(employeeDaoMock.update(unexistantEmployee)).thenThrow(NoSuchElementException.class);
-        UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee, employeeDaoMock);
+        UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee);
         assertThrows(
                 NoSuchElementException.class,
                 () -> service.execute(),
@@ -71,7 +71,7 @@ class UpdateEmployeeServiceTest {
     void updateNullEmployee_ShouldThrowException() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new UpdateEmployeeService(null, employeeDaoMock),
+                () -> new UpdateEmployeeService(null),
                 "Passing a null employee should throw an exception."
         );
     }
