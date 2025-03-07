@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 /**
- * A service class that runs ServiceCommand classes, while handling the database connection and resource
+ * An invoker class that runs ServiceCommand classes, while handling the database connection and resource
  * initialization.
  *
  * @author Simon Lundgren
