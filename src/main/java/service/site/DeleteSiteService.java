@@ -1,11 +1,9 @@
 package service.site;
 
-import db.DbConn;
 import domain.Site;
-import repository.DaoFactory;
+import repository.DaoFactory.*;
 import repository.SiteDao;
-import service.CleaningManagerServiceException;
-import service.ServiceCommand;
+import service.BaseService;
 
 import java.sql.SQLException;
 
@@ -16,47 +14,19 @@ import java.sql.SQLException;
  * @version 1.0
  * Created on: 2025-02-28
  */
-public class DeleteSiteService implements ServiceCommand<Boolean> {
-
-    private final SiteDao siteDao;
+public class DeleteSiteService extends BaseService<Boolean> {
 
     private final Site site;
 
-    public DeleteSiteService(Site site, SiteDao siteDao) {
+    public DeleteSiteService(Site site) {
         if (site == null) {
             throw new IllegalArgumentException("Site cannot be null");
         }
-        if (siteDao == null) {
-            throw new IllegalArgumentException("SiteDao cannot be null");
-        }
-        this.siteDao = siteDao;
         this.site = site;
     }
 
-    public DeleteSiteService(Site site) {
-        this(site, new SiteDao());
-    }
-
     @Override
-    public Boolean execute() {
-        try {
-            DbConn.i().open();
-            return siteDao.delete(site);
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new CleaningManagerServiceException("An error occurred while deleting the site");
-        } finally {
-            try {
-                DbConn.i().close();
-            } catch (SQLException e) {
-                System.err.println("An error occurred while closing the database connection");
-                System.err.println(e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public void init(DaoFactory daoFactory, DbConn dbConn) {
-
+    public Boolean executeImplementation() throws SQLException {
+        return daoFactory.<SiteDao>get(DaoType.SITE).delete(site);
     }
 }

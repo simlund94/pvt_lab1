@@ -1,12 +1,9 @@
 package service.employee;
 
-import db.DbConn;
 import domain.Employee;
 import repository.DaoFactory.*;
 import repository.EmployeeDao;
 import service.BaseService;
-import service.CleaningManagerServiceException;
-import service.ServiceCommand;
 
 import java.sql.SQLException;
 
@@ -29,7 +26,7 @@ public class UpdateEmployeeService extends BaseService<Employee> {
 
     @Override
     public Employee executeImplementation() throws SQLException {
-        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).update(employee);
+        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).update(employee);
     }
 }
 

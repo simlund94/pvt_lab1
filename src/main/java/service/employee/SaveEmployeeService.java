@@ -1,8 +1,6 @@
 package service.employee;
 
-import db.DbConn;
 import domain.Employee;
-import repository.DaoFactory;
 import repository.DaoFactory.*;
 import repository.EmployeeDao;
 import service.BaseService;
@@ -28,6 +26,6 @@ public class SaveEmployeeService extends BaseService<Employee> {
 
     @Override
     public Employee executeImplementation() throws SQLException {
-        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).save(employee);
+        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).save(employee);
     }
 }

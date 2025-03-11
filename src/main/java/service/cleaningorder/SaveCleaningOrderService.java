@@ -33,7 +33,7 @@ public class SaveCleaningOrderService extends BaseService<CleaningOrder> {
     @Override
     protected CleaningOrder executeImplementation() throws SQLException {
         validateForeignKeys();
-        return daoFactory.<CleaningOrderDao>get(FactoryType.CLEANING_ORDER).save(cleaningOrder);
+        return daoFactory.<CleaningOrderDao>get(DaoType.CLEANING_ORDER).save(cleaningOrder);
     }
 
     private void validateForeignKeys() throws SQLException {

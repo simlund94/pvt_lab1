@@ -48,7 +48,7 @@ class DeleteEmployeeServiceTest {
 
     @Test
     void deleteExistingEmployee() throws SQLException {
-        when(daoFactoryMock.get(DaoFactory.FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoFactory.DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.delete(existingEmployee)).thenReturn(true);
         DeleteEmployeeService service = new DeleteEmployeeService(existingEmployee);
         service.init(daoFactoryMock, dbConnMock);
@@ -60,7 +60,7 @@ class DeleteEmployeeServiceTest {
 
     @Test
     void deleteNonExistentEmployee() throws SQLException {
-        when(daoFactoryMock.get(DaoFactory.FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoFactory.DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.delete(nonExistantEmployee)).thenReturn(false);
         DeleteEmployeeService service = new DeleteEmployeeService(nonExistantEmployee);
         service.init(daoFactoryMock, dbConnMock);

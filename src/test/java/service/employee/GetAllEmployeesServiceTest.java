@@ -2,7 +2,6 @@ package service.employee;
 
 import db.DbConn;
 import domain.Employee;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repository.DaoFactory;
@@ -42,7 +41,7 @@ class GetAllEmployeesServiceTest {
 
     @Test
     void getAllEmployeesShouldReturnListOfEmployees() throws SQLException {
-        when(daoFactoryMock.get(DaoFactory.FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoFactory.DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.getAll()).thenReturn(employees);
         GetAllEmployeesService service = new GetAllEmployeesService();
         service.init(daoFactoryMock, dbConnMock);

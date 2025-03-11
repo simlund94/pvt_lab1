@@ -1,12 +1,10 @@
 package service.room;
 
-import db.DbConn;
 import domain.Room;
 
-import repository.DaoFactory;
+import repository.DaoFactory.*;
 import repository.RoomDao;
-import service.CleaningManagerServiceException;
-import service.ServiceCommand;
+import service.BaseService;
 
 import java.sql.SQLException;
 
@@ -16,45 +14,19 @@ import java.sql.SQLException;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class DeleteRoomService implements ServiceCommand<Boolean> {
+public class DeleteRoomService extends BaseService<Boolean> {
 
     private final Room room;
-
-    private final RoomDao roomDao;
 
     public DeleteRoomService(Room room, RoomDao roomDao) {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
         }
-        if (roomDao == null) {
-            throw new IllegalArgumentException("The RoomDAO cannot be null");
-        }
         this.room = room;
-        this.roomDao = roomDao;
-    }
-
-    public DeleteRoomService(Room room) {
-        this(room, new RoomDao());
     }
 
     @Override
-    public Boolean execute() {
-        try {
-            DbConn.i().open();
-            return roomDao.delete(room);
-        } catch (SQLException e) {
-            throw new CleaningManagerServiceException("Error deleting room in the database.");
-        } finally {
-            try {
-                DbConn.i().close();
-            } catch (SQLException e) {
-                System.err.println("An error occurred while closing the database connection: " + e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public void init(DaoFactory daoFactory, DbConn dbConn) {
-
+    public Boolean executeImplementation() throws SQLException {
+            return daoFactory.<RoomDao>get(DaoType.ROOM).delete(room);
     }
 }

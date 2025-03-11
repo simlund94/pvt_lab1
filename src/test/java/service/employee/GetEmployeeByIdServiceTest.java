@@ -51,7 +51,7 @@ class GetEmployeeByIdServiceTest {
 
     @Test
     void getEmployeeByValidId() throws SQLException {
-        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.get(1)).thenReturn(employeeReturned);
         GetEmployeeByIdService service = new GetEmployeeByIdService(1);
         service.init(daoFactoryMock, dbConnMock);
@@ -65,7 +65,7 @@ class GetEmployeeByIdServiceTest {
 
     @Test
     void getNonExistingEmployee_ShouldThrowException() throws SQLException {
-        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.get(2)).thenThrow(NoSuchElementException.class);
         GetEmployeeByIdService service = new GetEmployeeByIdService(2);
         service.init(daoFactoryMock, dbConnMock);

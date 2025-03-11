@@ -53,7 +53,7 @@ class UpdateEmployeeServiceTest {
 
     @Test
     void updateExistingEmployee_ShouldReturnUpdatedEmployee() throws SQLException {
-        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.update(existingEmployee)).thenReturn(employeeReturned);
         UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee);
         service.init(daoFactoryMock, dbConnMock);
@@ -66,7 +66,7 @@ class UpdateEmployeeServiceTest {
 
     @Test
     void updateNonExistantEmployee_ShouldThrowException() throws SQLException {
-        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.update(unexistantEmployee)).thenThrow(NoSuchElementException.class);
         UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee);
         service.init(daoFactoryMock, dbConnMock);

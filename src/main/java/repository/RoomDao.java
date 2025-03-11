@@ -170,6 +170,7 @@ public class RoomDao implements Dao<Room> {
 
     /**
      * Retrieves all rooms records that have the matching Site id foreign key in the database.
+     * Opens its own connection to the database for lazy loading.
      *
      * @param siteId The site id
      * @return A List of Room objects associated with the site of the passed id.
@@ -185,12 +186,15 @@ public class RoomDao implements Dao<Room> {
         prst.setInt(1, siteId);
         prst.executeQuery();
         ResultSet rs = prst.getResultSet();
+
+        DbConn.i().open();
         while (rs.next()) {
             int roomId = rs.getInt("id");
             double sizeInSqm = rs.getDouble("size_in_sqm");
             String description = rs.getString("description");
             roomsOnSite.add(new Room(roomId, sizeInSqm, description, siteId));
         }
+        DbConn.i().close();
         return roomsOnSite;
     }
 

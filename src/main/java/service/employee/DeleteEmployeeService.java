@@ -1,12 +1,9 @@
 package service.employee;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud;
-import db.DbConn;
 import domain.Employee;
 import repository.DaoFactory.*;
 import repository.EmployeeDao;
 import service.BaseService;
-import service.CleaningManagerServiceException;
 
 import java.sql.SQLException;
 
@@ -29,6 +26,6 @@ public class DeleteEmployeeService extends BaseService<Boolean> {
 
     @Override
     public Boolean executeImplementation() throws SQLException {
-        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).delete(employee);
+        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).delete(employee);
     }
 }

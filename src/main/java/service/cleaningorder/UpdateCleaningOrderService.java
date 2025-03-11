@@ -27,6 +27,6 @@ public class UpdateCleaningOrderService extends BaseService<CleaningOrder> {
 
     @Override
     protected CleaningOrder executeImplementation() throws SQLException {
-        return daoFactory.<CleaningOrderDao>get(FactoryType.CLEANING_ORDER).update(cleaningOrder);
+        return daoFactory.<CleaningOrderDao>get(DaoType.CLEANING_ORDER).update(cleaningOrder);
     }
 }

@@ -50,7 +50,7 @@ class SaveEmployeeServiceTest {
 
     @Test
     void saveValidEmployee_ShouldReturnFullEmployee() throws SQLException {
-        when(daoFactoryMock.get(FactoryType.EMPLOYEE)).thenReturn(employeeDaoMock);
+        when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.save(employeeToSave)).thenReturn(employeeReturn);
         SaveEmployeeService service = new SaveEmployeeService(employeeToSave);
         service.init(daoFactoryMock, dbConnMock);

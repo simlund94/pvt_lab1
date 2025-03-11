@@ -7,11 +7,11 @@ package repository;
  */
 public class DaoFactory {
 
-    public <T extends Dao<?>> T get(FactoryType factoryType) {
+    public <T extends Dao<?>> T get(DaoType factoryType) {
         return (T) factoryType.createDao();
     }
 
-    public enum FactoryType {
+    public enum DaoType {
         EMPLOYEE {
             @Override
             public EmployeeDao createDao() {

@@ -14,12 +14,10 @@ import java.sql.SQLException;
  */
 public abstract class BaseService<T> implements ServiceCommand<T> {
 
-    protected DbConn dbConn;
     protected DaoFactory daoFactory;
 
     @Override
-    public void init(DaoFactory daoFactory, DbConn dbConn) {
-        this.dbConn = dbConn;
+    public void init(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -40,9 +38,6 @@ public abstract class BaseService<T> implements ServiceCommand<T> {
     protected abstract T executeImplementation() throws SQLException;
 
     private void checkResources() {
-        if (dbConn == null) {
-            throw new IllegalStateException("DbConn was null. The init() method must be called correctly before calling execute()");
-        }
         if (daoFactory == null) {
             throw new IllegalStateException("DaoFactory was null. The init() method must be called correctly before calling execute()");
         }

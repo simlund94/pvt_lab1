@@ -216,18 +216,10 @@ public class Site {
         }
         if (rooms == null) {
             try {
-                DbConn.i().open();
                 rooms = roomDao.getAllRoomsOnSite(id);
             } catch (SQLException e) {
                 System.err.println(e.getMessage());
                 throw new CleaningManagerDomainException("An error occurred while retrieving the rooms from the database");
-            } finally {
-                try {
-                    DbConn.i().close();
-                } catch (SQLException e) {
-                    System.err.println("An error occurred while closing the database connection");
-                    System.err.println(e.getMessage());
-                }
             }
         }
         return rooms;

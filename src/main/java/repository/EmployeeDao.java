@@ -118,7 +118,7 @@ public class EmployeeDao implements Dao<Employee> {
             return this.get(employee.getId());
         } else {
             String errorMessage = String.format("No employee with the id %d in the database", employee.getId());
-            throw new NoSuchElementException("No employee with that id exists in the database");
+            throw new NoSuchElementException(errorMessage);
         }
     }
 

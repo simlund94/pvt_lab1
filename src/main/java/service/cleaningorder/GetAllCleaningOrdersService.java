@@ -19,6 +19,6 @@ public class GetAllCleaningOrdersService extends BaseService<List<CleaningOrder>
 
     @Override
     protected List<CleaningOrder> executeImplementation() throws SQLException {
-        return daoFactory.<CleaningOrderDao>get(FactoryType.CLEANING_ORDER).getAll();
+        return daoFactory.<CleaningOrderDao>get(DaoType.CLEANING_ORDER).getAll();
     }
 }

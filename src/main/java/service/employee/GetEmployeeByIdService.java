@@ -26,7 +26,7 @@ public class GetEmployeeByIdService extends BaseService<Employee> {
 
     @Override
     public Employee executeImplementation() throws SQLException {
-        return daoFactory.<EmployeeDao>get(FactoryType.EMPLOYEE).get(id);
+        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).get(id);
     }
 
 }

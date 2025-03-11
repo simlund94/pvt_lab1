@@ -25,7 +25,6 @@ public interface ServiceCommand<T> {
      * Initializes the resources needed to perform the implemented operation
      *
      * @param daoFactory The daoFactory to produce the correct DAO
-     * @param dbConn The database singleton instance
      */
-    void init(DaoFactory daoFactory, DbConn dbConn);
+    void init(DaoFactory daoFactory);
 }

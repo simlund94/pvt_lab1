@@ -25,7 +25,7 @@ public class SiteDao implements Dao<Site> {
     private DbConn dbConn;
 
     /**
-     * Constructor with injectable database connection instance for mock testing.
+     * Constructor with injectable database connection instance.
      *
      * @param dbConn The database connection instance
      */

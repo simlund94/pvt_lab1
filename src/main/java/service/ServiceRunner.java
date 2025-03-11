@@ -19,7 +19,7 @@ public class ServiceRunner {
     public <T> T execute(ServiceCommand<T> service) {
         try {
             DbConn.i().open();
-            service.init(new DaoFactory(), DbConn.i());
+            service.init(new DaoFactory());
             return service.execute();
         } catch (SQLException e) {
             System.err.println(e.getMessage());
