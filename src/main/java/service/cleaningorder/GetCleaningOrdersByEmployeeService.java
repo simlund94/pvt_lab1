@@ -1,12 +1,10 @@
 package service.cleaningorder;
 
-import db.DbConn;
 import domain.CleaningOrder;
 import domain.Employee;
 import repository.CleaningOrderDao;
-import repository.DaoFactory;
-import service.CleaningManagerServiceException;
-import service.ServiceCommand;
+import repository.DaoFactory.*;
+import service.BaseService;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,47 +17,27 @@ import java.util.List;
  * @version 1.0
  * Created on: 2025-03-02
  */
-public class GetCleaningOrdersByEmployeeService implements ServiceCommand<List<CleaningOrder>> {
+public class GetCleaningOrdersByEmployeeService extends BaseService<List<CleaningOrder>> {
 
-    private final Employee employee;
+    private final int id;
 
-    private final CleaningOrderDao cleaningOrderDao;
-
-    public GetCleaningOrdersByEmployeeService(Employee employee, CleaningOrderDao cleaningOrderDao) {
-        if (employee == null) {
-            throw new IllegalArgumentException("Employee cannot be null");
+    public GetCleaningOrdersByEmployeeService(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Id cannot be zero or less");
         }
-        if (cleaningOrderDao == null) {
-            throw new IllegalArgumentException("Dao cannot be null");
-        }
-        this.employee = employee;
-        this.cleaningOrderDao = cleaningOrderDao;
+        this.id = id;
     }
 
     public GetCleaningOrdersByEmployeeService(Employee employee) {
-        this(employee, new CleaningOrderDao());
-    }
-
-    @Override
-    public List<CleaningOrder> execute() {
-        try {
-            DbConn.i().open();
-            return cleaningOrderDao.getAllByEmployee(employee);
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-            throw new CleaningManagerServiceException("An error occurred while retrieving the cleaning orders associated with: " + employee.getName());
-        } finally {
-            try {
-                DbConn.i().close();
-            } catch (SQLException e) {
-                System.err.println("An error occurred while closing the database connection.");
-                System.err.println(e.getMessage());
-            }
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null");
         }
+        this.id = employee.getId();
     }
 
     @Override
-    public void init(DaoFactory daoFactory, DbConn dbConn) {
-
+    protected List<CleaningOrder> executeImplementation() throws SQLException {
+            return daoFactory.<CleaningOrderDao>get(DaoType.CLEANING_ORDER).getAllByEmployee(id);
     }
+
 }

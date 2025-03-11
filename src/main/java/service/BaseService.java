@@ -22,6 +22,21 @@ public abstract class BaseService<T> implements ServiceCommand<T> {
     }
 
     @Override
+    public void init() {
+        init(new DaoFactory());
+    }
+
+    /*
+     * Jag ville ha kod som kontrollerade att init hade körts korrekt en gång som jag inte behövde
+     * upprepa i alla klasser, och detta var min lösning. Execute-metoden lever uppe i BaseService
+     * och kan inte överskuggas, vilken i sin tur anropar executeImplementation som är protected och
+     * som måste implementeras av alla barnklasser. När execute() anropas så kör den checken, och anropar sedan den specifika
+     * metoden i barnklassen.
+     *
+     * Kanske är lite omständigt/onödigt iochmed att serviceCommand bör köras i runner, men nu får man
+     * ett hjälpsamt meddelande om man inte gör det och glömmer init ...
+     */
+    @Override
     public final T execute() throws SQLException {
         checkResources();
         return executeImplementation();
@@ -42,5 +57,4 @@ public abstract class BaseService<T> implements ServiceCommand<T> {
             throw new IllegalStateException("DaoFactory was null. The init() method must be called correctly before calling execute()");
         }
     }
-
 }

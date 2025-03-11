@@ -18,7 +18,7 @@ public class DeleteRoomService extends BaseService<Boolean> {
 
     private final Room room;
 
-    public DeleteRoomService(Room room, RoomDao roomDao) {
+    public DeleteRoomService(Room room) {
         if (room == null) {
             throw new IllegalArgumentException("Room cannot be null");
         }
@@ -26,7 +26,7 @@ public class DeleteRoomService extends BaseService<Boolean> {
     }
 
     @Override
-    public Boolean executeImplementation() throws SQLException {
+    protected Boolean executeImplementation() throws SQLException {
             return daoFactory.<RoomDao>get(DaoType.ROOM).delete(room);
     }
 }

@@ -26,7 +26,6 @@ class GetAllEmployeesServiceTest {
 
     EmployeeDao employeeDaoMock;
     DaoFactory daoFactoryMock;
-    DbConn dbConnMock;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -36,7 +35,6 @@ class GetAllEmployeesServiceTest {
 
         employeeDaoMock = mock(EmployeeDao.class);
         daoFactoryMock = mock(DaoFactory.class);
-        dbConnMock = mock(DbConn.class);
     }
 
     @Test
@@ -44,7 +42,7 @@ class GetAllEmployeesServiceTest {
         when(daoFactoryMock.get(DaoFactory.DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.getAll()).thenReturn(employees);
         GetAllEmployeesService service = new GetAllEmployeesService();
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         List<Employee> result = service.execute();
 
         assertNotNull(result, "The list returned should not be null");

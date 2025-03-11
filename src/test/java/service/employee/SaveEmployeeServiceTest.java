@@ -27,7 +27,6 @@ class SaveEmployeeServiceTest {
     Employee employeeReturn;
     EmployeeDao employeeDaoMock;
     DaoFactory daoFactoryMock;
-    DbConn dbConnMock;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +34,6 @@ class SaveEmployeeServiceTest {
         employeeReturn = new Employee(1, "Simon Lundgren", 1994);
         employeeDaoMock = mock(EmployeeDao.class);
         daoFactoryMock = mock(DaoFactory.class);
-        dbConnMock = mock(DbConn.class);
     }
 
     @AfterEach
@@ -44,7 +42,6 @@ class SaveEmployeeServiceTest {
         employeeReturn = null;
         employeeDaoMock = null;
         daoFactoryMock = null;
-        dbConnMock = null;
 
     }
 
@@ -53,7 +50,7 @@ class SaveEmployeeServiceTest {
         when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.save(employeeToSave)).thenReturn(employeeReturn);
         SaveEmployeeService service = new SaveEmployeeService(employeeToSave);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         Employee result = service.execute();
 
         assertEquals(employeeReturn, result, "Employee returned is not the same as expected");

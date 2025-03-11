@@ -14,6 +14,10 @@ public class DbConn {
     private Connection connection = null;
     private Statement statement = null;
 
+    /**
+     * Counter to track how many consecutive times the database has been opened, so that
+     * the same number of closes are required to close it.
+     */
     private byte openRequests;
 
     private static final String DB_NAME = "25simonl";
@@ -76,7 +80,8 @@ public class DbConn {
     }
 
     /**
-     * Opens the database connection.
+     * Opens the database connection. The amount of calls to open is tracked, and an
+     * equal number of calls to close is needed to actually close the connection.
      *
      * @throws SQLException if a database error occurs
      */
@@ -88,7 +93,8 @@ public class DbConn {
     }
 
     /**
-     * Closes the database connection.
+     * Closes the database connection. The amount of calls to open is tracked, and an
+     * equal number of calls to close is needed to actually close the connection.
      *
      * @throws SQLException if a database error occurs
      */
@@ -96,6 +102,7 @@ public class DbConn {
         if (openRequests > 0) {
             openRequests--;
         }
+
         if (openRequests == 0) {
             if (statement != null)
                 statement.close();

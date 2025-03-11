@@ -30,7 +30,7 @@ public class CheckIfSiteExistsService extends BaseService<Boolean> {
     }
 
     @Override
-    public Boolean executeImplementation() throws SQLException {
+    protected Boolean executeImplementation() throws SQLException {
         return daoFactory.<SiteDao>get(DaoType.SITE).existsById(id);
     }
 

@@ -28,7 +28,6 @@ class GetEmployeeByIdServiceTest {
     Employee employeeReturned;
 
     EmployeeDao employeeDaoMock;
-    DbConn dbConnMock;
     DaoFactory daoFactoryMock;
 
     @BeforeEach
@@ -37,7 +36,6 @@ class GetEmployeeByIdServiceTest {
         employeeReturned = new Employee(1, "Simon Lundgren", 1994);
         employeeDaoMock = mock(EmployeeDao.class);
         daoFactoryMock = mock(DaoFactory.class);
-        dbConnMock = mock(DbConn.class);
     }
 
     @AfterEach
@@ -46,7 +44,6 @@ class GetEmployeeByIdServiceTest {
         employeeReturned = null;
         employeeDaoMock = null;
         daoFactoryMock = null;
-        dbConnMock = null;
     }
 
     @Test
@@ -54,7 +51,7 @@ class GetEmployeeByIdServiceTest {
         when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.get(1)).thenReturn(employeeReturned);
         GetEmployeeByIdService service = new GetEmployeeByIdService(1);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         Employee result = service.execute();
 
         assertNotNull(result, "The method should not return null");
@@ -68,7 +65,7 @@ class GetEmployeeByIdServiceTest {
         when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.get(2)).thenThrow(NoSuchElementException.class);
         GetEmployeeByIdService service = new GetEmployeeByIdService(2);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
 
         assertThrows(
                 NoSuchElementException.class,

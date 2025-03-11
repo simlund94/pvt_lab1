@@ -5,6 +5,7 @@ import db.DbConn;
 import domain.CleaningOrder;
 import domain.Employee;
 import domain.OrderStatus;
+import domain.Room;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -210,6 +211,10 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
      * @throws SQLException if a database error occurs
      */
     public List<CleaningOrder> getAllByEmployee(int employeeId) throws SQLException {
+        if (employeeId <= 0) {
+            throw new IllegalArgumentException("employeeId cannot be zero or negative");
+        }
+
         String query = "SELECT id, employee_id, room_id, time_scheduled, time_finished, order_status " +
                 "FROM lab_cleaning_orders WHERE employee_id = ?;";
         prst = dbConn.prepareStatement(query);
@@ -243,6 +248,59 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
      * @throws SQLException if a database error occurs
      */
     public List<CleaningOrder> getAllByEmployee(Employee employee) throws SQLException {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null");
+        }
         return getAllByEmployee(employee.getId());
+    }
+
+    /**
+     * Retrieves all cleaning orders associated with the passed room id.
+     *
+     * @param roomId The employee id
+     * @return A list of cleaning orders assigned to the room
+     * @throws SQLException if a database error occurs
+     */
+    public List<CleaningOrder> getAllByRoom(int roomId) throws SQLException {
+        if (roomId <= 0) {
+            throw new IllegalArgumentException("roomId cannot be zero or negative");
+        }
+
+        String query = "SELECT id, employee_id, room_id, time_scheduled, time_finished, order_status " +
+                "FROM lab_cleaning_orders WHERE room_id = ?;";
+        prst = dbConn.prepareStatement(query);
+        prst.setInt(1, roomId);
+        List<CleaningOrder> cleaningOrders = new ArrayList<>();
+        ResultSet rs = prst.executeQuery();
+        while (rs.next()) {
+            int orderId = rs.getInt("id");
+            int employeeId = rs.getInt("employee_id");
+            roomId = rs.getInt("room_id");
+            LocalDateTime timeScheduled = rs.getTimestamp("time_scheduled").toLocalDateTime();
+            LocalDateTime timeFinished = null;
+            OrderStatus orderStatus = OrderStatus.valueOf(rs.getString("order_status"));
+
+            Timestamp timestampFinished = rs.getTimestamp("time_finished");
+            if (timestampFinished != null) {
+                timeFinished = timestampFinished.toLocalDateTime();
+            }
+
+            CleaningOrder cleaningOrder = new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
+            cleaningOrders.add(cleaningOrder);
+        }
+        return cleaningOrders;
+    }
+
+    /**
+     * Retrieves all cleaning orders associated with the passed room id.
+     *
+     * @return A list of cleaning orders assigned to the room
+     * @throws SQLException if a database error occurs
+     */
+    public List<CleaningOrder> getAllByRoom(Room room) throws SQLException {
+        if (room == null) {
+            throw new IllegalArgumentException("Room cannot be null");
+        }
+        return this.getAllByRoom(room.getId());
     }
 }

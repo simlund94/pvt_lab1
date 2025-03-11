@@ -32,16 +32,18 @@ public class SaveCleaningOrderService extends BaseService<CleaningOrder> {
 
     @Override
     protected CleaningOrder executeImplementation() throws SQLException {
-        validateForeignKeys();
+        validateReferences();
         return daoFactory.<CleaningOrderDao>get(DaoType.CLEANING_ORDER).save(cleaningOrder);
     }
 
-    private void validateForeignKeys() throws SQLException {
-        if (!new RoomDao().existsById(cleaningOrder.getRoomId())) {
+    private void validateReferences() throws SQLException {
+        RoomDao roomDao = daoFactory.get(DaoType.ROOM);
+        EmployeeDao employeeDao = daoFactory.get(DaoType.EMPLOYEE);
+        if (!roomDao.existsById(cleaningOrder.getRoomId())) {
             String error = String.format("No room with id %d exists in the database", cleaningOrder.getRoomId());
             throw new IllegalArgumentException(error);
         }
-        if (!new EmployeeDao().existsById(cleaningOrder.getEmployeeId())) {
+        if (!employeeDao.existsById(cleaningOrder.getEmployeeId())) {
             String error = String.format("No employee with id %d exists in the database", cleaningOrder.getEmployeeId());
             throw new IllegalArgumentException(error);
         }

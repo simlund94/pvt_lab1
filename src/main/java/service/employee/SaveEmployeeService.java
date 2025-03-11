@@ -25,7 +25,7 @@ public class SaveEmployeeService extends BaseService<Employee> {
     }
 
     @Override
-    public Employee executeImplementation() throws SQLException {
+    protected Employee executeImplementation() throws SQLException {
         return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).save(employee);
     }
 }

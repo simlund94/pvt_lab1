@@ -22,9 +22,15 @@ public interface ServiceCommand<T> {
     T execute() throws SQLException;
 
     /**
-     * Initializes the resources needed to perform the implemented operation
+     * Initializes the resources needed to perform the implemented operation with
+     * DI.
      *
-     * @param daoFactory The daoFactory to produce the correct DAO
+     * @param daoFactory The daoFactory to be injected
      */
     void init(DaoFactory daoFactory);
+
+    /**
+     * Initializes the resources needed to perform the implemented operation
+     */
+    void init();
 }

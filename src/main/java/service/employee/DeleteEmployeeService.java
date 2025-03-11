@@ -25,7 +25,7 @@ public class DeleteEmployeeService extends BaseService<Boolean> {
     }
 
     @Override
-    public Boolean executeImplementation() throws SQLException {
+    protected Boolean executeImplementation() throws SQLException {
         return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).delete(employee);
     }
 }

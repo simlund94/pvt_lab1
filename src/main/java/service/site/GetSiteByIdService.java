@@ -27,7 +27,7 @@ public class GetSiteByIdService extends BaseService<Site> {
     }
 
     @Override
-    public Site executeImplementation() throws SQLException {
+    protected Site executeImplementation() throws SQLException {
             return daoFactory.<SiteDao>get(DaoType.SITE).get(id);
     }
 }

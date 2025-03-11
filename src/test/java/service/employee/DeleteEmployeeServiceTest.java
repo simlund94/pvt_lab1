@@ -25,7 +25,6 @@ class DeleteEmployeeServiceTest {
     Employee nonExistantEmployee;
 
     DaoFactory daoFactoryMock;
-    DbConn dbConnMock;
     EmployeeDao employeeDaoMock;
 
     @BeforeEach
@@ -33,7 +32,6 @@ class DeleteEmployeeServiceTest {
         existingEmployee = new Employee(1, "Simon Lundgren", 1994);
         nonExistantEmployee = new Employee(2, "Kalle Kaka", 1988);
         daoFactoryMock = mock(DaoFactory.class);
-        dbConnMock = mock(DbConn.class);
         employeeDaoMock = mock(EmployeeDao.class);
     }
 
@@ -42,7 +40,6 @@ class DeleteEmployeeServiceTest {
         existingEmployee = null;
         nonExistantEmployee = null;
         daoFactoryMock = null;
-        dbConnMock = null;
         employeeDaoMock = null;
     }
 
@@ -51,7 +48,7 @@ class DeleteEmployeeServiceTest {
         when(daoFactoryMock.get(DaoFactory.DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.delete(existingEmployee)).thenReturn(true);
         DeleteEmployeeService service = new DeleteEmployeeService(existingEmployee);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         boolean result = service.execute();
 
         assertTrue(result, "Deleting an existing employee should return true");
@@ -63,7 +60,7 @@ class DeleteEmployeeServiceTest {
         when(daoFactoryMock.get(DaoFactory.DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.delete(nonExistantEmployee)).thenReturn(false);
         DeleteEmployeeService service = new DeleteEmployeeService(nonExistantEmployee);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         boolean result = service.execute();
 
         assertFalse(result, "Deleting a nonexistant employee should return false");

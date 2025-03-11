@@ -17,7 +17,7 @@ import java.util.List;
 public class GetAllEmployeesService extends BaseService<List<Employee>> {
 
     @Override
-    public List<Employee> executeImplementation() throws SQLException {
+    protected List<Employee> executeImplementation() throws SQLException {
         return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).getAll();
     }
 

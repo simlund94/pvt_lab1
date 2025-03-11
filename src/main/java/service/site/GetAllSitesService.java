@@ -18,7 +18,7 @@ import java.util.List;
 public class GetAllSitesService extends BaseService<List<Site>> {
 
     @Override
-    public List<Site> executeImplementation() throws SQLException {
+    protected List<Site> executeImplementation() throws SQLException {
             return daoFactory.<SiteDao>get(DaoType.SITE).getAll();
     }
 }

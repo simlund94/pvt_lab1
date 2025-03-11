@@ -26,7 +26,7 @@ public class DeleteCleaningOrderService extends BaseService<Boolean> {
     }
 
     @Override
-    public Boolean executeImplementation() throws SQLException {
+    protected Boolean executeImplementation() throws SQLException {
             return daoFactory.<CleaningOrderDao>get(DaoType.CLEANING_ORDER).delete(cleaningOrder);
     }
 }

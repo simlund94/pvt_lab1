@@ -29,7 +29,6 @@ class UpdateEmployeeServiceTest {
     Employee unexistantEmployee;
     EmployeeDao employeeDaoMock;
     DaoFactory daoFactoryMock;
-    DbConn dbConnMock;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +37,6 @@ class UpdateEmployeeServiceTest {
         unexistantEmployee = new Employee(2, "Kalle Kaka", 1989);
         employeeDaoMock = mock(EmployeeDao.class);
         daoFactoryMock = mock(DaoFactory.class);
-        dbConnMock = mock(DbConn.class);
     }
 
     @AfterEach
@@ -48,7 +46,6 @@ class UpdateEmployeeServiceTest {
         unexistantEmployee = null;
         employeeDaoMock = null;
         daoFactoryMock = null;
-        dbConnMock = null;
     }
 
     @Test
@@ -56,7 +53,7 @@ class UpdateEmployeeServiceTest {
         when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.update(existingEmployee)).thenReturn(employeeReturned);
         UpdateEmployeeService service = new UpdateEmployeeService(existingEmployee);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         Employee result = service.execute();
 
         assertEquals(employeeReturned, result, "The employee returned should be equal to the one passed in");
@@ -69,7 +66,7 @@ class UpdateEmployeeServiceTest {
         when(daoFactoryMock.get(DaoType.EMPLOYEE)).thenReturn(employeeDaoMock);
         when(employeeDaoMock.update(unexistantEmployee)).thenThrow(NoSuchElementException.class);
         UpdateEmployeeService service = new UpdateEmployeeService(unexistantEmployee);
-        service.init(daoFactoryMock, dbConnMock);
+        service.init(daoFactoryMock);
         assertThrows(
                 NoSuchElementException.class,
                 () -> service.execute(),
