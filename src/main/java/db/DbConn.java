@@ -14,6 +14,8 @@ public class DbConn {
     private Connection connection = null;
     private Statement statement = null;
 
+    private byte openRequests;
+
     private static final String DB_NAME = "25simonl";
     private static final String USER = "25simonl";
     private static final String PASSWORD = "simonlpwd";
@@ -79,6 +81,7 @@ public class DbConn {
      * @throws SQLException if a database error occurs
      */
     public void open() throws SQLException {
+        openRequests++;
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
         }
@@ -90,10 +93,15 @@ public class DbConn {
      * @throws SQLException if a database error occurs
      */
     public void close() throws SQLException {
-        if (statement != null)
-            statement.close();
-        if (connection != null)
-            connection.close();
+        if (openRequests > 0) {
+            openRequests--;
+        }
+        if (openRequests == 0) {
+            if (statement != null)
+                statement.close();
+            if (connection != null)
+                connection.close();
+        }
     }
 
 }
