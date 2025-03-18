@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A DAO class for retrieving and persisting Employee records in the database.
@@ -47,7 +48,7 @@ public class EmployeeDao implements Dao<Employee> {
      * @throws NoSuchElementException if no matching id is found.
      */
     @Override
-    public Employee get(int employeeId) throws SQLException {
+    public Optional<Employee> get(int employeeId) throws SQLException {
         if (employeeId <= 0) {
             throw new IllegalArgumentException("employeeId must be greater than 0");
         }
@@ -63,11 +64,8 @@ public class EmployeeDao implements Dao<Employee> {
             int age = rs.getInt("birth_year");
             String name = rs.getString("name");
             employee = new Employee(id, name, age);
-        } else {
-            String errorMessage = String.format("An employee with ID: %d does not exist in the database!", employeeId);
-            throw new NoSuchElementException(errorMessage);
         }
-        return employee;
+        return Optional.ofNullable(employee);
     }
 
     /**

@@ -2,6 +2,7 @@ package repository;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * An interface for DAO classes to streamline the most common DAO operations.
@@ -43,7 +44,7 @@ public interface Dao<T> {
      * @param id The primary key in the table
      * @return The object matching the id
      */
-    T get(int id) throws SQLException;
+    Optional<T> get(int id) throws SQLException;
 
     /**
      * Retrieves all objects of the parameters type from the table.

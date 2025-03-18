@@ -4,6 +4,7 @@ import domain.Employee;
 import repository.DaoFactory.*;
 import repository.EmployeeDao;
 import service.BaseService;
+import service.CleaningManagerServiceException;
 
 import java.sql.SQLException;
 
@@ -26,7 +27,8 @@ public class GetEmployeeByIdService extends BaseService<Employee> {
 
     @Override
     protected Employee executeImplementation() throws SQLException {
-        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).get(id);
+        String errorMessage = String.format("An employee with ID: %d does not exist in the database!", id);
+        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).get(id)
+                .orElseThrow(() -> new CleaningManagerServiceException(errorMessage));
     }
-
 }

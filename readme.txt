@@ -1,3 +1,5 @@
- - Skapa Command Interface som är typparametriserat, implementera alla Commandklasser
- - Flytta open/close av databasen till service klasserna
- - Skapa ett eget CleaningManagerException
+ - Integrationstest (IT)
+ - Implementera Optionals för get-metoder
+ - Strömlinjeforma Exceptions
+ - Logger, Adapter, Factory
+ - DAO-refaktorering
