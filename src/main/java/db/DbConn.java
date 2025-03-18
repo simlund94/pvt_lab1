@@ -1,7 +1,5 @@
 package db;
 
-import jakarta.annotation.Resource;
-
 import java.sql.*;
 
 /**
@@ -103,9 +101,7 @@ public class DbConn {
     public void close() throws SQLException {
         if (openRequests > 0) {
             openRequests--;
-        }
-
-        if (openRequests == 0) {
+        } else if (openRequests == 0) {
             if (statement != null)
                 statement.close();
             if (connection != null)

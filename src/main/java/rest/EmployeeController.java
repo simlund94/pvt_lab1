@@ -14,6 +14,7 @@ import service.employee.GetEmployeeByIdService;
 import java.util.List;
 
 /**
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created on: 2025-03-17
@@ -21,12 +22,7 @@ import java.util.List;
 @Path("/employees")
 public class EmployeeController {
 
-    private ServiceRunner runner;
-
-    @Inject
-    public EmployeeController(ServiceRunner runner) {
-        this.runner = runner;
-    }
+    private ServiceRunner runner = new ServiceRunner();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -35,10 +31,19 @@ public class EmployeeController {
         return runner.execute(new GetEmployeeByIdService(id));
     }
 
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("")
     public List<Employee> getAll() {
         return runner.execute(new GetAllEmployeesService());
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/one")
+    public Employee getOne() {
+        return new Employee(32, "Simon Lundgren", 1994);
+    }
 }
+

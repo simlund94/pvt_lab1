@@ -3,6 +3,7 @@ package service;
 import db.DbConn;
 import repository.DaoFactory;
 
+import java.beans.JavaBean;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
