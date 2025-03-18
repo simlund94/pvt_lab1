@@ -111,13 +111,8 @@ public class EmployeeDao implements Dao<Employee> {
         prst = dbConn.prepareStatement(query);
         prst.setString(1, employee.getName());
         prst.setInt(2, employee.getId());
-        int changedRows = prst.executeUpdate();
-        if (changedRows == 1) {
-            return this.get(employee.getId());
-        } else {
-            String errorMessage = String.format("No employee with the id %d in the database", employee.getId());
-            throw new NoSuchElementException(errorMessage);
-        }
+        prst.executeUpdate();
+        return this.get(employee.getId()).orElseThrow();
     }
 
     /**

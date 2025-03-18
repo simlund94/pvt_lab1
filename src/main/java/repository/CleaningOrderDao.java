@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * @author Simon Lundgren
@@ -103,14 +104,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         prst.setTimestamp(2, Timestamp.valueOf(cleaningOrder.getTimeFinished().get()));
         prst.setString(3, cleaningOrder.getOrderStatus().toString());
         prst.setInt(4, cleaningOrder.getOrderId());
-        int affectedRows = prst.executeUpdate();
-        int expectedAffectedRows = 1;
-        if (affectedRows == expectedAffectedRows) {
-            return this.get(cleaningOrder.getOrderId());
-        } else {
-            String errorMessage = String.format("No Cleaning Order with the id %d in the database", cleaningOrder.getOrderId());
-            throw new NoSuchElementException(errorMessage);
-        }
+        return this.get(cleaningOrder.getOrderId()).orElseThrow();
     }
 
     /**
@@ -143,7 +137,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
      * @throws SQLException If a database error occurs
      */
     @Override
-    public CleaningOrder get(int id) throws SQLException {
+    public Optional<CleaningOrder> get(int id) throws SQLException {
         if (id < 0) {
             throw new IllegalArgumentException("Id cannot be negative");
         }
@@ -153,6 +147,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         prst = dbConn.prepareStatement(query);
         prst.setInt(1, id);
         ResultSet rs = prst.executeQuery();
+        CleaningOrder cleaningOrder = null;
         if (rs.next()) {
             int orderId = rs.getInt("id");
             int employeeId = rs.getInt("employee_id");
@@ -165,10 +160,9 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
             if (timestampFinished != null) {
                 timeFinished = timestampFinished.toLocalDateTime();
             }
-            return new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
-        } else {
-            throw new NoSuchElementException("No order of that id in the database");
+            cleaningOrder = new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
         }
+        return Optional.ofNullable(cleaningOrder);
     }
 
     /**

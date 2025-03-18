@@ -27,8 +27,6 @@ public class GetEmployeeByIdService extends BaseService<Employee> {
 
     @Override
     protected Employee executeImplementation() throws SQLException {
-        String errorMessage = String.format("An employee with ID: %d does not exist in the database!", id);
-        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).get(id)
-                .orElseThrow(() -> new CleaningManagerServiceException(errorMessage));
+        return daoFactory.<EmployeeDao>get(DaoType.EMPLOYEE).get(id).orElseThrow();
     }
 }

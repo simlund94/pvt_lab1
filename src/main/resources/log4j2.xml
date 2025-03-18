@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+
   <Appenders>
     <Console name="CONSOLE">
       <PatternLayout pattern="%d [%t] %5p %c{1.} - %m%n"/>
@@ -7,7 +8,7 @@
   </Appenders>
 
   <Loggers>
-    <Logger name="" level="DEBUG"/>
+    <Logger name="default" level="DEBUG"/>
     <Root level="WARN">
       <AppenderRef ref="CONSOLE"/>
     </Root>

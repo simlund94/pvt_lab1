@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A DAO class for retrieving and persisting Site records in the database.
@@ -95,7 +96,7 @@ public class SiteDao implements Dao<Site> {
         prst.setString(1, site.getName());
         prst.setInt(2, site.getId());
         prst.executeUpdate();
-        return get(site.getId());
+        return get(site.getId()).orElseThrow();
     }
 
     /**
@@ -131,11 +132,12 @@ public class SiteDao implements Dao<Site> {
      * @throws NoSuchElementException If there is not matching id in the database
      */
     @Override
-    public Site get(int id) throws SQLException {
+    public Optional<Site> get(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("Site id cannot be zero or negative.");
         }
 
+        Site site = null;
         String query = "SELECT id, name, address, postal_code, postal_area, property_designation FROM lab_sites " +
                 "WHERE id = ?";
         prst = DbConn.i().prepareStatement(query);
@@ -149,11 +151,9 @@ public class SiteDao implements Dao<Site> {
             String postalArea = rs.getString("postal_area");
             String propertyDesignation = rs.getString("property_designation");
             List<Room> roomsOnSite = new RoomDao().getAllRoomsOnSite(id);
-            return new Site(id, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite);
-        } else {
-            String errorMessage = String.format("A site with ID: %d does not exist in the database!", id);
-            throw new NoSuchElementException(errorMessage);
+            site = new Site(id, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite);
         }
+        return Optional.ofNullable(site);
     }
 
     /**

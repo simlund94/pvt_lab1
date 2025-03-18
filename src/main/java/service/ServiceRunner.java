@@ -2,6 +2,7 @@ package service;
 
 import db.DbConn;
 import repository.DaoFactory;
+import service.logger.Logger;
 
 import java.beans.JavaBean;
 import java.sql.SQLException;
@@ -23,17 +24,17 @@ public class ServiceRunner {
             service.init();
             return service.execute();
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            Logger.get().error(e);
             throw new CleaningManagerServiceException("An error occurred performing the operation in the database.");
         } catch (NoSuchElementException e) {
-            System.err.println(e.getMessage());
+            Logger.get().error(e);
             throw new CleaningManagerServiceException("The element in question could not be located in the database.");
         } finally {
             try {
                 DbConn.i().close();
             } catch (SQLException e) {
                 System.err.println("An error occurred trying to close the database connection");
-                System.err.println(e.getMessage());
+                Logger.get().error(e);
             }
         }
     }

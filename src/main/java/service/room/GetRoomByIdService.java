@@ -4,6 +4,7 @@ import domain.Room;
 import repository.DaoFactory.*;
 import repository.RoomDao;
 import service.BaseService;
+import service.CleaningManagerServiceException;
 
 import java.sql.SQLException;
 
@@ -26,6 +27,6 @@ public class GetRoomByIdService extends BaseService<Room> {
 
     @Override
     protected Room executeImplementation() throws SQLException {
-            return daoFactory.<RoomDao>get(DaoType.ROOM).get(id);
+        return daoFactory.<RoomDao>get(DaoType.ROOM).get(id).orElseThrow();
     }
 }

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A DAO-class for retrieving and persisting room records in the database.
@@ -85,12 +86,8 @@ public class RoomDao implements Dao<Room> {
         prst = DbConn.i().prepareStatement(query);
         prst.setString(1, room.getDescription());
         prst.setInt(2, room.getId());
-        int changedRows = prst.executeUpdate();
-        if (changedRows == 1) {
-            return get(room.getId());
-        } else {
-            throw new NoSuchElementException("No Room in the database with that id");
-        }
+        prst.executeUpdate();
+        return get(room.getId()).orElseThrow();
     }
 
     /**
@@ -126,11 +123,12 @@ public class RoomDao implements Dao<Room> {
      * @throws NoSuchElementException if no matching id is found
      */
     @Override
-    public Room get(int id) throws SQLException {
+    public Optional<Room> get(int id) throws SQLException {
         if (id <= 0) {
             throw new IllegalArgumentException("The room id cannot be zero or negative");
         }
 
+        Room room = null;
         String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE id = ?";
         prst = DbConn.i().prepareStatement(query);
         prst.setInt(1, id);
@@ -140,11 +138,9 @@ public class RoomDao implements Dao<Room> {
             double sizeInSqm = rs.getDouble("size_in_sqm");
             String description = rs.getString("description");
             int siteId = rs.getInt("site_id");
-            return new Room(fetchedId, sizeInSqm, description, siteId);
-        } else {
-            String errorMessage = String.format("A room with ID: %d does not exist in the database!", id);
-            throw new NoSuchElementException(errorMessage);
+            room = new Room(fetchedId, sizeInSqm, description, siteId);
         }
+        return Optional.ofNullable(room);
     }
 
     /**

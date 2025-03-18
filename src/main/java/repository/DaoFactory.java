@@ -1,6 +1,8 @@
 package repository;
 
 /**
+ * A factory that returns Dao instances by passing the appropriate Enum value to the get-method.
+ *
  * @author Simon Lundgren
  * @version 1.0
  * Created 2025-03-04

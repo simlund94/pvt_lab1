@@ -71,7 +71,7 @@ class EmployeeDaoTest {
         when(resultSetMock.getString("name")).thenReturn(employee1.getName());
         when(resultSetMock.getInt("birth_year")).thenReturn(employee1.getBirthYear());
 
-        Employee result = employeeDao.get(employee1.getId());
+        Employee result = employeeDao.get(employee1.getId()).orElseThrow();
 
         assertNotNull(result, "The result should not be null");
         assertEquals(employee1, result, "The employee should be equal to " + employee1);

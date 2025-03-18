@@ -1,6 +1,8 @@
 package service.logger;
 
 
+import org.apache.logging.log4j.LogManager;
+
 import java.util.function.Supplier;
 
 /**
@@ -10,21 +12,15 @@ import java.util.function.Supplier;
  */
 public class Log4J implements Logger {
 
-    private static Logger logger;
-
-    public static Logger i() {
-        if (logger == null) {
-            logger = new Log4J();
-        }
-        return logger;
-    }
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger("default");
 
     @Override
     public void info(Supplier<String> messageSupplier) {
+        logger.info(messageSupplier);
     }
 
     @Override
     public void error(Throwable ex) {
-
+        logger.error(ex);
     }
 }

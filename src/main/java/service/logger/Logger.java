@@ -14,6 +14,7 @@ public interface Logger {
     void error(Throwable ex);
 
     static Logger get() {
-        return new Logger();
+        return new Log4J();
     }
 }
+

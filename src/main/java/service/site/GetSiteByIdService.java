@@ -28,6 +28,6 @@ public class GetSiteByIdService extends BaseService<Site> {
 
     @Override
     protected Site executeImplementation() throws SQLException {
-            return daoFactory.<SiteDao>get(DaoType.SITE).get(id);
+            return daoFactory.<SiteDao>get(DaoType.SITE).get(id).orElseThrow();
     }
 }
