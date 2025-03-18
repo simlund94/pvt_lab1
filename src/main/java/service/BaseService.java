@@ -7,6 +7,8 @@ import java.sql.SQLException;
 
 /**
  * A base class to centralise common fields and operations for the Service Command classes.
+ * Child classes must implement the executeImplementation method which in turn is executed when
+ * the base classes execute-method is called.
  *
  * @author Simon Lundgren
  * @version 1.0
