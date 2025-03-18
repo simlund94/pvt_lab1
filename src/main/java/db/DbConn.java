@@ -1,5 +1,7 @@
 package db;
 
+import jakarta.annotation.Resource;
+
 import java.sql.*;
 
 /**
