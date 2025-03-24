@@ -10,11 +10,22 @@ import java.util.function.Supplier;
  */
 public interface Logger {
 
+    /**
+     * Logs a message at the info level with the given Supplier.
+     *
+     * @param messageSupplier The Supplier, carrying a String
+     */
     void info(Supplier<String> messageSupplier);
+
+    /**
+     * Logs an exception at the error level.
+     *
+     * @param ex The exception that was thrown
+     */
     void error(Throwable ex);
 
-    static Logger get() {
-        return new Log4J();
+    static Logger get(Class<?> clazz) {
+        return new Log4J(clazz);
     }
 }
 

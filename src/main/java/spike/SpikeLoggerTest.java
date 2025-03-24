@@ -1,7 +1,13 @@
 package spike;
 
+import domain.Room;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import service.ServiceRunner;
-import service.employee.GetEmployeeByIdService;
+import service.room.GetAllRoomsService;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @author Simon Lundgren
@@ -10,8 +16,11 @@ import service.employee.GetEmployeeByIdService;
  */
 public class SpikeLoggerTest {
 
-    public static void main(String[] args) {
+    private static final Logger logger = LogManager.getLogger("cleaningManager");
+
+    public static void main(String[] args) throws SQLException {
         ServiceRunner runner = new ServiceRunner();
-        runner.execute(new GetEmployeeByIdService(12));
+        List<Room> rooms = runner.execute(new GetAllRoomsService());
     }
+
 }

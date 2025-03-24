@@ -2,6 +2,7 @@ package service;
 
 import db.DbConn;
 import repository.DaoFactory;
+import service.logger.Logger;
 
 import java.sql.SQLException;
 
@@ -17,6 +18,8 @@ import java.sql.SQLException;
 public abstract class BaseService<T> implements ServiceCommand<T> {
 
     protected DaoFactory daoFactory;
+
+    private static final Logger logger = Logger.get(BaseService.class);
 
     @Override
     public void init(DaoFactory daoFactory) {
@@ -55,8 +58,12 @@ public abstract class BaseService<T> implements ServiceCommand<T> {
     protected abstract T executeImplementation() throws SQLException;
 
     private void checkResources() {
+        logger.info(() -> "Checking resources ...");
         if (daoFactory == null) {
-            throw new IllegalStateException("DaoFactory was null. The init() method must be called correctly before calling execute()");
+            IllegalStateException exception = new IllegalStateException(
+                    "DaoFactory was null. The init() method must be called correctly before calling execute()");
+            logger.error(exception);
+            throw exception;
         }
     }
 }

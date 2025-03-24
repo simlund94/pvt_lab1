@@ -18,23 +18,24 @@ import java.util.NoSuchElementException;
  */
 public class ServiceRunner {
 
+    private static final Logger logger = Logger.get(ServiceRunner.class);
+
     public <T> T execute(ServiceCommand<T> service) {
         try {
             DbConn.i().open();
             service.init();
             return service.execute();
         } catch (SQLException e) {
-            Logger.get().error(e);
+            logger.error(e);
             throw new CleaningManagerServiceException("An error occurred performing the operation in the database.");
         } catch (NoSuchElementException e) {
-            Logger.get().error(e);
+            logger.error(e);
             throw new CleaningManagerServiceException("The element in question could not be located in the database.");
         } finally {
             try {
                 DbConn.i().close();
             } catch (SQLException e) {
-                System.err.println("An error occurred trying to close the database connection");
-                Logger.get().error(e);
+                logger.error(e);
             }
         }
     }

@@ -3,13 +3,13 @@
 
   <Appenders>
     <Console name="CONSOLE">
-      <PatternLayout pattern="%d [%t] %5p %c{1.} - %m%n"/>
+      <PatternLayout pattern="[%d (%t) %4p %c{1.}] - %m%n"/>
     </Console>
   </Appenders>
 
   <Loggers>
-    <Logger name="default" level="DEBUG"/>
-    <Root level="WARN">
+    <Logger name="cleaningManager" level="DEBUG"/>
+    <Root level="INFO">
       <AppenderRef ref="CONSOLE"/>
     </Root>
   </Loggers>

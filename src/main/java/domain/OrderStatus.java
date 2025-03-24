@@ -1,7 +1,7 @@
 package domain;
 
 /**
- * Constants representing the current state of an order.
+ * Constants representing the current state of a cleaning order.
  *
  * @author Simon Lundgren
  * @version 1.0
