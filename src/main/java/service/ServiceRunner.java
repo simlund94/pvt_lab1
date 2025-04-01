@@ -1,5 +1,6 @@
 package service;
 
+import db.DatabaseConnector;
 import db.DbConn;
 import repository.DaoFactory;
 import service.logger.Logger;
@@ -18,12 +19,22 @@ import java.util.NoSuchElementException;
  */
 public class ServiceRunner {
 
+    private final DatabaseConnector dbConn;
+
     private static final Logger logger = Logger.get(ServiceRunner.class);
+
+    public ServiceRunner(DatabaseConnector dbConn) {
+        this.dbConn = dbConn;
+    }
+
+    public ServiceRunner() {
+        this(DbConn.i());
+    }
 
     public <T> T execute(ServiceCommand<T> service) {
         try {
-            DbConn.i().open();
-            service.init();
+            dbConn.open();
+            service.init(new DaoFactory(dbConn));
             return service.execute();
         } catch (SQLException e) {
             logger.error(e);
@@ -33,7 +44,7 @@ public class ServiceRunner {
             throw new CleaningManagerServiceException("The element in question could not be located in the database.");
         } finally {
             try {
-                DbConn.i().close();
+                dbConn.close();
             } catch (SQLException e) {
                 logger.error(e);
             }

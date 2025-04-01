@@ -4,7 +4,6 @@ import domain.Employee;
 import repository.DaoFactory.*;
 import repository.EmployeeDao;
 import service.BaseService;
-import service.CleaningManagerServiceException;
 
 import java.sql.SQLException;
 

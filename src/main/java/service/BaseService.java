@@ -1,5 +1,6 @@
 package service;
 
+import db.DatabaseConnector;
 import db.DbConn;
 import repository.DaoFactory;
 import service.logger.Logger;
@@ -58,7 +59,6 @@ public abstract class BaseService<T> implements ServiceCommand<T> {
     protected abstract T executeImplementation() throws SQLException;
 
     private void checkResources() {
-        logger.info(() -> "Checking resources ...");
         if (daoFactory == null) {
             IllegalStateException exception = new IllegalStateException(
                     "DaoFactory was null. The init() method must be called correctly before calling execute()");

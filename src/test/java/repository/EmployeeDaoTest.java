@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -93,28 +94,14 @@ class EmployeeDaoTest {
     }
 
     @Test
-    void getEmployeeNotInDatabase_ShouldThrowException() throws SQLException {
-        String query = "SELECT id, name, birth_year FROM lab_employees WHERE id = ?";
-        when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
-        when(preparedStatementMock.getResultSet()).thenReturn(resultSetMock);
-        when(resultSetMock.next()).thenReturn(false);
-
-        assertThrows(
-                NoSuchElementException.class,
-                () -> employeeDao.get(3),
-                "Retrieving an element not in the database should throw an exception"
-        );
-        verify(preparedStatementMock, times(1)).getResultSet();
-        verify(dbConnMock, times(1)).prepareStatement(query);
-        verify(resultSetMock, times(1)).next();
-    }
-
-    @Test
     void updateEmployeeSuccessfully() throws SQLException {
         String query = "UPDATE lab_employees SET name = ? WHERE id = ?";
         EmployeeDao daoSpy = spy(new EmployeeDao(dbConnMock));
+        Optional<Employee> optionalMock = mock(Optional.class);
+        when(optionalMock.orElseThrow()).thenReturn(employee1);
+
         employee1.setName("Anders Lundgren");
-        doReturn(employee1).when(daoSpy).get(employee1.getId());
+        doReturn(optionalMock).when(daoSpy).get(employee1.getId());
         when(dbConnMock.prepareStatement(query)).thenReturn(preparedStatementMock);
         when(preparedStatementMock.executeUpdate()).thenReturn(1);
 

@@ -1,7 +1,9 @@
 package repository;
 
+import db.DatabaseConnector;
 import db.DbConn;
 import domain.Employee;
+import service.logger.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,14 +23,16 @@ public class EmployeeDao implements Dao<Employee> {
 
     private PreparedStatement prst = null;
 
-    private DbConn dbConn;
+    private final DatabaseConnector dbConn;
+
+    private static final Logger LOGGER = Logger.get(EmployeeDao.class);
 
     /**
      * Constructor with injectable database connection instance for mock testing.
      *
      * @param dbConn The database connection instance
      */
-    public EmployeeDao(DbConn dbConn) {
+    public EmployeeDao(DatabaseConnector dbConn) {
         this.dbConn = dbConn;
     }
 
@@ -61,9 +65,10 @@ public class EmployeeDao implements Dao<Employee> {
         ResultSet rs = prst.getResultSet();
         if (rs.next()) {
             int id = rs.getInt("id");
-            int age = rs.getInt("birth_year");
+            int birthYear = rs.getInt("birth_year");
             String name = rs.getString("name");
-            employee = new Employee(id, name, age);
+            employee = new Employee(id, name, birthYear);
+            LOGGER.info(() -> String.format("Employee retrieved: %s, Id %d", name, id));
         }
         return Optional.ofNullable(employee);
     }
@@ -91,6 +96,7 @@ public class EmployeeDao implements Dao<Employee> {
         if (rs.next()) {
             int id = rs.getInt(1);
             employeeSaved = new Employee(id, employee.getName(), employee.getBirthYear());
+            LOGGER.info(() -> String.format("Employee saved to database: %s, Id %d", employee.getName(), id));
         }
         return employeeSaved;
     }
@@ -112,7 +118,11 @@ public class EmployeeDao implements Dao<Employee> {
         prst.setString(1, employee.getName());
         prst.setInt(2, employee.getId());
         prst.executeUpdate();
-        return this.get(employee.getId()).orElseThrow();
+
+        Employee employeeUpdated = this.get(employee.getId()).orElseThrow();
+        LOGGER.info(() -> String.format("Employee successfully updated: %s, Id %d",
+                employeeUpdated.getName(), employeeUpdated.getId()));
+        return employeeUpdated;
     }
 
     /**
@@ -132,8 +142,10 @@ public class EmployeeDao implements Dao<Employee> {
         prst.setInt(1, employee.getId());
         int affectedRows = prst.executeUpdate();
         if (affectedRows == 1) {
+            LOGGER.info(() -> String.format("Employee successfully deleted: %s, id %d", employee.getName(), employee.getId()));
             return true;
         }
+        LOGGER.info(() -> String.format("Failed to delete employee: %s, id %d", employee.getName(), employee.getId()));
         return false;
     }
 

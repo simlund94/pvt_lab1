@@ -1,5 +1,6 @@
 package repository;
 
+import db.DatabaseConnector;
 import db.DbConn;
 import domain.Room;
 import domain.Site;
@@ -22,14 +23,14 @@ public class RoomDao implements Dao<Room> {
 
     private PreparedStatement prst = null;
 
-    private DbConn dbConn;
+    private final DatabaseConnector dbConn;
 
     /**
      * Constructor with injectable database connection instance for mock testing.
      *
      * @param dbConn The database connection instance
      */
-    public RoomDao(DbConn dbConn) {
+    public RoomDao(DatabaseConnector dbConn) {
         this.dbConn = dbConn;
     }
 

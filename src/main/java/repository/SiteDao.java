@@ -1,5 +1,6 @@
 package repository;
 
+import db.DatabaseConnector;
 import db.DbConn;
 import domain.Room;
 import domain.Site;
@@ -23,14 +24,14 @@ public class SiteDao implements Dao<Site> {
     private PreparedStatement prst = null;
     private ResultSet rs = null;
 
-    private DbConn dbConn;
+    private final DatabaseConnector dbConn;
 
     /**
      * Constructor with injectable database connection instance.
      *
      * @param dbConn The database connection instance
      */
-    public SiteDao(DbConn dbConn) {
+    public SiteDao(DatabaseConnector dbConn) {
         this.dbConn = dbConn;
     }
 

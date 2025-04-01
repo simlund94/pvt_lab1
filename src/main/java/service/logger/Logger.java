@@ -18,12 +18,25 @@ public interface Logger {
     void info(Supplier<String> messageSupplier);
 
     /**
+     * Logs a message at the debug level with the given Supplier.
+     *
+     * @param messageSupplier The Supplier, carrying a string
+     */
+    void debug(Supplier<String> messageSupplier);
+
+    /**
      * Logs an exception at the error level.
      *
      * @param ex The exception that was thrown
      */
     void error(Throwable ex);
 
+    /**
+     * The current implementation of Logger in use in the application.
+     *
+     * @param clazz The class where the logger is situated, to provide
+     * @return
+     */
     static Logger get(Class<?> clazz) {
         return new Log4J(clazz);
     }

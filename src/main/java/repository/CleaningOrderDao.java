@@ -1,6 +1,7 @@
 package repository;
 
 import com.mysql.cj.x.protobuf.MysqlxCrud;
+import db.DatabaseConnector;
 import db.DbConn;
 import domain.CleaningOrder;
 import domain.Employee;
@@ -23,14 +24,14 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
 
     PreparedStatement prst = null;
 
-    DbConn dbConn;
+    DatabaseConnector dbConn;
 
     /**
      * Constructor with injectable database connection instance for mock testing.
      *
      * @param dbConn The database connection instance
      */
-    public CleaningOrderDao(DbConn dbConn) {
+    public CleaningOrderDao(DatabaseConnector dbConn) {
         this.dbConn = dbConn;
     }
 

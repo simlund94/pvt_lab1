@@ -1,5 +1,7 @@
 package db;
 
+import service.logger.Logger;
+
 import java.sql.*;
 
 /**
@@ -7,12 +9,14 @@ import java.sql.*;
  *
  * @author Simon Lundgren
  */
-public class DbConn {
+public class DbConn implements DatabaseConnector {
 
     private static DbConn instance;
 
     private Connection connection = null;
     private Statement statement = null;
+
+    private static final Logger LOGGER = Logger.get(DbConn.class);
 
     /**
      * Counter to track how many consecutive times the database has been opened, so that
@@ -49,8 +53,7 @@ public class DbConn {
         try {
             statement = connection.createStatement();
         } catch (SQLException e) {
-            System.err.println("Could not create Statement");
-            System.err.println(e.getMessage());
+            LOGGER.error(e);
         }
         return statement;
     }
@@ -76,7 +79,7 @@ public class DbConn {
      */
     public PreparedStatement prepareStatement(String statementString)
             throws SQLException {
-        return this.getConnection().prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS);
+        return this.connection.prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS);
     }
 
     /**
@@ -89,6 +92,7 @@ public class DbConn {
         openRequests++;
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+            LOGGER.debug(() -> "Database connection opened");
         }
     }
 
@@ -106,6 +110,7 @@ public class DbConn {
                 statement.close();
             if (connection != null)
                 connection.close();
+            LOGGER.debug(() -> "Database connection closed");
         }
     }
 

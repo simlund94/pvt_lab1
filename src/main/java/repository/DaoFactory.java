@@ -1,5 +1,8 @@
 package repository;
 
+import db.DatabaseConnector;
+import db.DbConn;
+
 /**
  * A factory that returns Dao instances by passing the appropriate Enum value to the get-method.
  *
@@ -9,36 +12,46 @@ package repository;
  */
 public class DaoFactory {
 
+    private DatabaseConnector dbConn;
+
+    public DaoFactory(DatabaseConnector dbConn) {
+        this.dbConn = dbConn;
+    }
+
+    public DaoFactory() {
+        this(DbConn.i());
+    }
+
     public <T extends Dao<?>> T get(DaoType factoryType) {
-        return (T) factoryType.createDao();
+        return (T) factoryType.createDao(dbConn);
     }
 
     public enum DaoType {
         EMPLOYEE {
             @Override
-            public EmployeeDao createDao() {
-                 return new EmployeeDao();
+            public EmployeeDao createDao(DatabaseConnector dbConn) {
+                 return new EmployeeDao(dbConn);
             }
         },
         ROOM {
             @Override
-            public RoomDao createDao() {
-                return new RoomDao();
+            public RoomDao createDao(DatabaseConnector dbConn) {
+                return new RoomDao(dbConn);
             }
         },
         SITE {
             @Override
-            public SiteDao createDao() {
-                return new SiteDao();
+            public SiteDao createDao(DatabaseConnector dbConn) {
+                return new SiteDao(dbConn);
             }
         },
         CLEANING_ORDER {
             @Override
-            public CleaningOrderDao createDao() {
-                return new CleaningOrderDao();
+            public CleaningOrderDao createDao(DatabaseConnector dbConn) {
+                return new CleaningOrderDao(dbConn);
             }
         };
 
-        public abstract Dao createDao();
+        public abstract Dao createDao(DatabaseConnector dbConn);
     }
 }
