@@ -4,6 +4,7 @@ import db.DatabaseConnector;
 import db.DbConn;
 import domain.Room;
 import domain.Site;
+import service.logger.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,11 +20,11 @@ import java.util.Optional;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class RoomDao implements Dao<Room> {
+public class RoomDao extends BaseDao<Room> {
 
     private PreparedStatement prst = null;
 
-    private final DatabaseConnector dbConn;
+    private static final Logger LOGGER = Logger.get(RoomDao.class);
 
     /**
      * Constructor with injectable database connection instance for mock testing.
@@ -31,14 +32,14 @@ public class RoomDao implements Dao<Room> {
      * @param dbConn The database connection instance
      */
     public RoomDao(DatabaseConnector dbConn) {
-        this.dbConn = dbConn;
+        super(dbConn);
     }
 
     /**
      * Constructor which retrieves an instance of the database connection.
      */
     public RoomDao() {
-        this(DbConn.i());
+        super();
     }
 
     /**
@@ -66,6 +67,7 @@ public class RoomDao implements Dao<Room> {
         if (rs.next()) {
             int newId = rs.getInt(1);
             roomSaved = new Room(newId, room.getSizeInSqm(), room.getDescription(), room.getSiteId());
+            LOGGER.info(() -> String.format("Room successfully saved to database: Id %d", newId));
         }
         return roomSaved;
     }
@@ -88,7 +90,9 @@ public class RoomDao implements Dao<Room> {
         prst.setString(1, room.getDescription());
         prst.setInt(2, room.getId());
         prst.executeUpdate();
-        return get(room.getId()).orElseThrow();
+        Room roomUpdated = get(room.getId()).orElseThrow();
+        LOGGER.info(() -> String.format("Room successfully updated: Id %d", room.getId()));
+        return roomUpdated;
     }
 
     /**
@@ -110,6 +114,7 @@ public class RoomDao implements Dao<Room> {
         int expectedAffectedRows = 1;
 
         if (affectedRows == expectedAffectedRows) {
+            LOGGER.info(() -> String.format("Room deleted successfully: Id %d", room.getId()));
             return true;
         }
         return false;
@@ -135,11 +140,9 @@ public class RoomDao implements Dao<Room> {
         prst.setInt(1, id);
         ResultSet rs = prst.executeQuery();
         if (rs.next()) {
-            int fetchedId = rs.getInt("id");
-            double sizeInSqm = rs.getDouble("size_in_sqm");
-            String description = rs.getString("description");
-            int siteId = rs.getInt("site_id");
-            room = new Room(fetchedId, sizeInSqm, description, siteId);
+            room = mapResultSetToEntity(rs);
+            String logMessage = String.format("Room successfully retrieved: Id %d", room.getId());
+            LOGGER.info(() -> logMessage);
         }
         return Optional.ofNullable(room);
     }
@@ -156,11 +159,7 @@ public class RoomDao implements Dao<Room> {
         prst = DbConn.i().prepareStatement(query);
         ResultSet rs = prst.executeQuery();
         while (rs.next()) {
-            int id = rs.getInt("id");
-            double sizeInSqm = rs.getDouble("size_in_sqm");
-            String description = rs.getString("description");
-            int siteId = rs.getInt("site_id");
-            rooms.add(new Room(id, sizeInSqm, description, siteId));
+            rooms.add(mapResultSetToEntity(rs));
         }
         return rooms;
     }
@@ -177,7 +176,7 @@ public class RoomDao implements Dao<Room> {
             throw new IllegalArgumentException("SiteId cannot be zero or negative");
         }
 
-        String query = "SELECT id, size_in_sqm, description FROM lab_rooms WHERE site_id = ?";
+        String query = "SELECT id, size_in_sqm, description, site_id FROM lab_rooms WHERE site_id = ?";
         List<Room> roomsOnSite = new ArrayList<>();
         prst = DbConn.i().prepareStatement(query);
         prst.setInt(1, siteId);
@@ -186,12 +185,10 @@ public class RoomDao implements Dao<Room> {
 
         DbConn.i().open();
         while (rs.next()) {
-            int roomId = rs.getInt("id");
-            double sizeInSqm = rs.getDouble("size_in_sqm");
-            String description = rs.getString("description");
-            roomsOnSite.add(new Room(roomId, sizeInSqm, description, siteId));
+            roomsOnSite.add(mapResultSetToEntity(rs));
         }
         DbConn.i().close();
+        LOGGER.info(() -> String.format("Retrieved all rooms from site with id %d", siteId));
         return roomsOnSite;
     }
 
@@ -229,5 +226,14 @@ public class RoomDao implements Dao<Room> {
         } else {
             return false;
         }
+    }
+
+    @Override
+    protected Room mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+        int roomId = resultSet.getInt("id");
+        double sizeInSqm = resultSet.getDouble("size_in_sqm");
+        String description = resultSet.getString("description");
+        int siteId = resultSet.getInt("site_id");
+        return new Room(roomId, sizeInSqm, description, siteId);
     }
 }

@@ -19,11 +19,9 @@ import java.util.Optional;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class EmployeeDao implements Dao<Employee> {
+public class EmployeeDao extends BaseDao<Employee> {
 
     private PreparedStatement prst = null;
-
-    private final DatabaseConnector dbConn;
 
     private static final Logger LOGGER = Logger.get(EmployeeDao.class);
 
@@ -33,14 +31,14 @@ public class EmployeeDao implements Dao<Employee> {
      * @param dbConn The database connection instance
      */
     public EmployeeDao(DatabaseConnector dbConn) {
-        this.dbConn = dbConn;
+        super(dbConn);
     }
 
     /**
      * Constructor which retrieves an instance of the database connection.
      */
     public EmployeeDao() {
-        dbConn = DbConn.i();
+        super();
     }
 
     /**
@@ -64,11 +62,9 @@ public class EmployeeDao implements Dao<Employee> {
         prst.executeQuery();
         ResultSet rs = prst.getResultSet();
         if (rs.next()) {
-            int id = rs.getInt("id");
-            int birthYear = rs.getInt("birth_year");
-            String name = rs.getString("name");
-            employee = new Employee(id, name, birthYear);
-            LOGGER.info(() -> String.format("Employee retrieved: %s, Id %d", name, id));
+            employee = mapResultSetToEntity(rs);
+            String logMessage = String.format("Employee retrieved: %s, Id %d", employee.getName(), employee.getId());
+            LOGGER.info(() -> logMessage);
         }
         return Optional.ofNullable(employee);
     }
@@ -163,11 +159,7 @@ public class EmployeeDao implements Dao<Employee> {
         prst.executeQuery();
         ResultSet rs = prst.getResultSet();
         while (rs.next()) {
-            int id = rs.getInt("id");
-            int birthYear = rs.getInt("birth_year");
-            String name = rs.getString("name");
-            Employee employee = new Employee(id, name, birthYear);
-            employees.add(employee);
+            employees.add(mapResultSetToEntity(rs));
         }
         return employees;
     }
@@ -193,5 +185,13 @@ public class EmployeeDao implements Dao<Employee> {
         } else {
             return false;
         }
+    }
+
+    @Override
+    protected Employee mapResultSetToEntity(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        int birthYear = rs.getInt("birth_year");
+        String name = rs.getString("name");
+        return new Employee(id, name, birthYear);
     }
 }

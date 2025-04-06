@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 import service.employee.*;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 1.0
  * Created on: 2025-03-24
  */
-class EmployeeServiceIT {
+class EmployeeServicesIT {
 
     ServiceRunner runner;
     DatabaseConnector h2DbConn;
@@ -58,7 +59,7 @@ class EmployeeServiceIT {
 
     @Test
     void saveAndGetEmployeeSuccessfully() {
-        SaveEmployeeService saveEmployee = new SaveEmployeeService(employeeNoId);
+        ServiceCommand<Employee> saveEmployee = new SaveEmployeeService(employeeNoId);
         Employee employeeSaved = runner.execute(saveEmployee);
         assertNotNull(employeeSaved);
         assertEquals(employee, employeeSaved,
@@ -74,7 +75,7 @@ class EmployeeServiceIT {
 
     @Test
     void getNonExistantEmployee_ShouldThrowException() {
-        GetEmployeeByIdService getEmployee = new GetEmployeeByIdService(idNotInDatabase);
+        ServiceCommand<Employee> getEmployee = new GetEmployeeByIdService(idNotInDatabase);
 
         assertThrows(CleaningManagerServiceException.class,
                 () -> runner.execute(getEmployee),
@@ -84,7 +85,7 @@ class EmployeeServiceIT {
     @Test
     void getAllEmployeesSuccessfully() throws SQLException {
         initializeTestData();
-        GetAllEmployeesService getAllEmployees = new GetAllEmployeesService();
+        ServiceCommand<List<Employee>> getAllEmployees = new GetAllEmployeesService();
         List<Employee> employeesRetrieved = runner.execute(getAllEmployees);
 
         assertNotNull(employeesRetrieved);
@@ -94,8 +95,18 @@ class EmployeeServiceIT {
     }
 
     @Test
+    void getAllEmployeesFromEmptyDatabase_ShouldReturnEmptyList() {
+        ServiceCommand<List<Employee>> getAllEmployees = new GetAllEmployeesService();
+        List<Employee> employeesRetrieved = runner.execute(getAllEmployees);
+
+        assertNotNull(employeesRetrieved);
+        assertEquals(employeesRetrieved, Collections.emptyList(),
+                "If the database contains no employees, it should return an empty list");
+    }
+
+    @Test
     void updateEmployeeSuccessfully() {
-        SaveEmployeeService saveEmployee = new SaveEmployeeService(employeeNoId);
+        ServiceCommand<Employee> saveEmployee = new SaveEmployeeService(employeeNoId);
         Employee employeeToUpdate = runner.execute(saveEmployee);
         employeeToUpdate.setName("Bobby Runner");
         UpdateEmployeeService updateEmployee = new UpdateEmployeeService(employeeToUpdate);
@@ -107,7 +118,7 @@ class EmployeeServiceIT {
 
     @Test
     void updateNonExistantEmployee_ShouldThrowException() {
-        UpdateEmployeeService updateEmployee = new UpdateEmployeeService(employee);
+        ServiceCommand<Employee> updateEmployee = new UpdateEmployeeService(employee);
         assertThrows(CleaningManagerServiceException.class,
                 () -> runner.execute(updateEmployee),
                 "Updating a non-existant employee should throw an exception");
@@ -116,7 +127,7 @@ class EmployeeServiceIT {
     @Test
     void deleteEmployeeSuccessfully() throws SQLException {
         initializeTestData();
-        DeleteEmployeeService deleteEmployee = new DeleteEmployeeService(employeesInTestDatabase.get(3));
+        ServiceCommand<Boolean> deleteEmployee = new DeleteEmployeeService(employeesInTestDatabase.get(3));
         boolean deleteSuccessful = runner.execute(deleteEmployee);
         List<Employee> employeesRetrieved = runner.execute(new GetAllEmployeesService());
 
@@ -127,9 +138,18 @@ class EmployeeServiceIT {
 
     @Test
     void deleteNonExistantEmployee_ShouldReturnFalse() {
-        DeleteEmployeeService deleteEmployee = new DeleteEmployeeService(employee);
+        ServiceCommand<Boolean> deleteEmployee = new DeleteEmployeeService(employee);
         boolean deleteSuccessful = runner.execute(deleteEmployee);
         assertFalse(deleteSuccessful, "Deleting an employee not in the database should return false");
+    }
+
+    @Test
+    void deleteEmployeeTwice_SecondAttemptShouldReturnFalse() throws SQLException {
+        initializeTestData();
+        Employee employeeToDelete = employeesInTestDatabase.getFirst();
+        ServiceCommand<Boolean> service = new DeleteEmployeeService(employeeToDelete);
+        assertTrue(runner.execute(service));
+        assertFalse(runner.execute(service), "The second attempt to delete the same employee should return false");
     }
 
     // Kör ett SQL-script som populerar H2-databasen med testdata när det är nödvändigt

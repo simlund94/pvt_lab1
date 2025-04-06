@@ -4,6 +4,7 @@ import db.DatabaseConnector;
 import db.DbConn;
 import domain.Room;
 import domain.Site;
+import service.logger.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,12 +20,11 @@ import java.util.Optional;
  * @author Simon Lundgren
  * @version 1.0
  */
-public class SiteDao implements Dao<Site> {
+public class SiteDao extends BaseDao<Site> {
 
     private PreparedStatement prst = null;
-    private ResultSet rs = null;
 
-    private final DatabaseConnector dbConn;
+    private static final Logger LOGGER = Logger.get(SiteDao.class);
 
     /**
      * Constructor with injectable database connection instance.
@@ -32,14 +32,14 @@ public class SiteDao implements Dao<Site> {
      * @param dbConn The database connection instance
      */
     public SiteDao(DatabaseConnector dbConn) {
-        this.dbConn = dbConn;
+        super(dbConn);
     }
 
     /**
      * Constructor which retrieves an instance of the database connection.
      */
     public SiteDao() {
-        this(DbConn.i());
+        super();
     }
 
     /**
@@ -66,7 +66,7 @@ public class SiteDao implements Dao<Site> {
         prst.setString(5, site.getPropertyDesignation());
         prst.execute();
 
-        rs = prst.getGeneratedKeys();
+        ResultSet rs = prst.getGeneratedKeys();
         if (rs.next()) {
             int newId = rs.getInt(1);
             siteSaved = new Site(newId,
@@ -76,6 +76,7 @@ public class SiteDao implements Dao<Site> {
                     site.getPostalArea(),
                     site.getPropertyDesignation(),
                     new RoomDao().getAllRoomsOnSite(newId));
+            LOGGER.info(() -> String.format("Site successfully saved to database: %s, Id %d", site.getName(), site.getId()));
         }
         return siteSaved;
     }
@@ -97,7 +98,9 @@ public class SiteDao implements Dao<Site> {
         prst.setString(1, site.getName());
         prst.setInt(2, site.getId());
         prst.executeUpdate();
-        return get(site.getId()).orElseThrow();
+        Site siteUpdated = get(site.getId()).orElseThrow();
+        LOGGER.info(() -> String.format("Site successfully updated: %s, %d", siteUpdated.getName(), site.getId()));
+        return siteUpdated;
     }
 
     /**
@@ -119,8 +122,10 @@ public class SiteDao implements Dao<Site> {
         int affectedRows = prst.executeUpdate();
         int expectedAffectedRows = 1;
         if (affectedRows == expectedAffectedRows) {
+            LOGGER.info(() -> String.format("Site successfully deleted: %s, id %d", site.getName(), site.getId()));
             return true;
         }
+        LOGGER.info(() -> String.format("Failed to delete site: %s, id %d", site.getName(), site.getId()));
         return false;
     }
 
@@ -146,13 +151,9 @@ public class SiteDao implements Dao<Site> {
         prst.executeQuery();
         ResultSet rs = prst.getResultSet();
         if (rs.next()) {
-            String name = rs.getString("name");
-            String address = rs.getString("address");
-            int postalCode = rs.getInt("postal_code");
-            String postalArea = rs.getString("postal_area");
-            String propertyDesignation = rs.getString("property_designation");
-            List<Room> roomsOnSite = new RoomDao().getAllRoomsOnSite(id);
-            site = new Site(id, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite);
+            site = mapResultSetToEntity(rs);
+            String logMessage = String.format("Site successfully retrieved: %s, Id %d", site.getName(), site.getId());
+            LOGGER.info(() -> logMessage);
         }
         return Optional.ofNullable(site);
     }
@@ -166,18 +167,11 @@ public class SiteDao implements Dao<Site> {
     public List<Site> getAll() throws SQLException {
         String query = "SELECT id, name, address, postal_code, postal_area, property_designation FROM lab_sites";
         List<Site> fetchedSites = new ArrayList<>();
-        RoomDao roomDao = new RoomDao();
         prst = DbConn.i().prepareStatement(query);
         prst.executeQuery();
         ResultSet rs = prst.getResultSet();
         while (rs.next()) {
-            int siteId = rs.getInt("id");
-            String name = rs.getString("name");
-            String address = rs.getString("address");
-            int postalCode = rs.getInt("postal_code");
-            String postalArea = rs.getString("postal_area");
-            String propertyDesignation = rs.getString("property_designation");
-            fetchedSites.add(new Site(siteId, name, address, postalCode, postalArea, propertyDesignation));
+            fetchedSites.add(mapResultSetToEntity(rs));
         }
         return fetchedSites;
     }
@@ -201,6 +195,7 @@ public class SiteDao implements Dao<Site> {
         }
         return fetchedSites;
     }
+
     /**
      * Checks if a site with the passed id exists in the database.
      *
@@ -224,4 +219,15 @@ public class SiteDao implements Dao<Site> {
         }
     }
 
+    @Override
+    protected Site mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        String name = resultSet.getString("name");
+        String address = resultSet.getString("address");
+        int postalCode = resultSet.getInt("postal_code");
+        String postalArea = resultSet.getString("postal_area");
+        String propertyDesignation = resultSet.getString("property_designation");
+        List<Room> roomsOnSite = new RoomDao().getAllRoomsOnSite(id);
+        return new Site(id, name, address, postalCode, postalArea, propertyDesignation, roomsOnSite);
+    }
 }

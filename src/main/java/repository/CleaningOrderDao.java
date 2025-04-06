@@ -7,6 +7,7 @@ import domain.CleaningOrder;
 import domain.Employee;
 import domain.OrderStatus;
 import domain.Room;
+import service.logger.Logger;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -20,11 +21,11 @@ import java.util.Optional;
  * @version 1.0
  * Created on: 2025-02-28
  */
-public class CleaningOrderDao implements Dao<CleaningOrder> {
+public class CleaningOrderDao extends BaseDao<CleaningOrder> {
 
-    PreparedStatement prst = null;
+    private PreparedStatement prst = null;
 
-    DatabaseConnector dbConn;
+    private static final Logger LOGGER = Logger.get(CleaningOrderDao.class);
 
     /**
      * Constructor with injectable database connection instance for mock testing.
@@ -32,14 +33,14 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
      * @param dbConn The database connection instance
      */
     public CleaningOrderDao(DatabaseConnector dbConn) {
-        this.dbConn = dbConn;
+        super(dbConn);
     }
 
     /**
      * Constructor which retrieves an instance of the database connection.
      */
     public CleaningOrderDao() {
-        this(DbConn.i());
+        super();
     }
 
     /**
@@ -81,6 +82,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
                     cleaningOrder.getTimeScheduled(),
                     cleaningOrder.getTimeFinished().orElse(null),
                     cleaningOrder.getOrderStatus());
+            LOGGER.info(() -> String.format("Cleaning Order successfully saved to database: Id %d", orderId));
         }
         return cleaningOrderSaved;
     }
@@ -105,7 +107,11 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         prst.setTimestamp(2, Timestamp.valueOf(cleaningOrder.getTimeFinished().get()));
         prst.setString(3, cleaningOrder.getOrderStatus().toString());
         prst.setInt(4, cleaningOrder.getOrderId());
-        return this.get(cleaningOrder.getOrderId()).orElseThrow();
+        prst.executeUpdate();
+
+        CleaningOrder cleaningOrderUpdated = this.get(cleaningOrder.getOrderId()).orElseThrow();
+        LOGGER.info(() -> String.format("Cleaning Order successfully updated: Id: %d", cleaningOrder.getOrderId()));
+        return cleaningOrderUpdated;
     }
 
     /**
@@ -126,7 +132,12 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         prst.setInt(1, cleaningOrder.getOrderId());
         int affectedRows = prst.executeUpdate();
         int expectedAffectedRows = 1;
-        return affectedRows == expectedAffectedRows;
+
+        if (affectedRows == expectedAffectedRows) {
+            LOGGER.info(() -> String.format("Cleaning Order deleted successfully: Id %d", cleaningOrder.getOrderId()));
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -150,18 +161,9 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         ResultSet rs = prst.executeQuery();
         CleaningOrder cleaningOrder = null;
         if (rs.next()) {
-            int orderId = rs.getInt("id");
-            int employeeId = rs.getInt("employee_id");
-            int roomId = rs.getInt("room_id");
-            LocalDateTime timeScheduled = rs.getTimestamp("time_scheduled").toLocalDateTime();
-            LocalDateTime timeFinished = null;
-            OrderStatus orderStatus = OrderStatus.valueOf(rs.getString("order_status"));
-
-            Timestamp timestampFinished = rs.getTimestamp("time_finished");
-            if (timestampFinished != null) {
-                timeFinished = timestampFinished.toLocalDateTime();
-            }
-            cleaningOrder = new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
+            cleaningOrder = mapResultSetToEntity(rs);
+            String logMessage = String.format("Cleaning Order successfully retrieved: Id %d", cleaningOrder.getOrderId());
+            LOGGER.info(() -> logMessage);
         }
         return Optional.ofNullable(cleaningOrder);
     }
@@ -180,20 +182,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         ResultSet rs = prst.executeQuery();
         List<CleaningOrder> cleaningOrders = new ArrayList<>();
         while (rs.next()) {
-            int orderId = rs.getInt("id");
-            int employeeId = rs.getInt("employee_id");
-            int roomId = rs.getInt("room_id");
-            LocalDateTime timeScheduled = rs.getTimestamp("time_scheduled").toLocalDateTime();
-            LocalDateTime timeFinished = null;
-            OrderStatus orderStatus = OrderStatus.valueOf(rs.getString("order_status"));
-
-            Timestamp timestampFinished = rs.getTimestamp("time_finished");
-            if (timestampFinished != null) {
-                timeFinished = timestampFinished.toLocalDateTime();
-            }
-
-            CleaningOrder cleaningOrder = new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
-            cleaningOrders.add(cleaningOrder);
+            cleaningOrders.add(mapResultSetToEntity(rs));
         }
         return cleaningOrders;
     }
@@ -217,20 +206,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         List<CleaningOrder> cleaningOrders = new ArrayList<>();
         ResultSet rs = prst.executeQuery();
         while (rs.next()) {
-            int orderId = rs.getInt("id");
-            employeeId = rs.getInt("employee_id");
-            int roomId = rs.getInt("room_id");
-            LocalDateTime timeScheduled = rs.getTimestamp("time_scheduled").toLocalDateTime();
-            LocalDateTime timeFinished = null;
-            OrderStatus orderStatus = OrderStatus.valueOf(rs.getString("order_status"));
-
-            Timestamp timestampFinished = rs.getTimestamp("time_finished");
-            if (timestampFinished != null) {
-                timeFinished = timestampFinished.toLocalDateTime();
-            }
-
-            CleaningOrder cleaningOrder = new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
-            cleaningOrders.add(cleaningOrder);
+            cleaningOrders.add(mapResultSetToEntity(rs));
         }
         return cleaningOrders;
     }
@@ -268,20 +244,7 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
         List<CleaningOrder> cleaningOrders = new ArrayList<>();
         ResultSet rs = prst.executeQuery();
         while (rs.next()) {
-            int orderId = rs.getInt("id");
-            int employeeId = rs.getInt("employee_id");
-            roomId = rs.getInt("room_id");
-            LocalDateTime timeScheduled = rs.getTimestamp("time_scheduled").toLocalDateTime();
-            LocalDateTime timeFinished = null;
-            OrderStatus orderStatus = OrderStatus.valueOf(rs.getString("order_status"));
-
-            Timestamp timestampFinished = rs.getTimestamp("time_finished");
-            if (timestampFinished != null) {
-                timeFinished = timestampFinished.toLocalDateTime();
-            }
-
-            CleaningOrder cleaningOrder = new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
-            cleaningOrders.add(cleaningOrder);
+            cleaningOrders.add(mapResultSetToEntity(rs));
         }
         return cleaningOrders;
     }
@@ -297,5 +260,21 @@ public class CleaningOrderDao implements Dao<CleaningOrder> {
             throw new IllegalArgumentException("Room cannot be null");
         }
         return this.getAllByRoom(room.getId());
+    }
+
+    @Override
+    protected CleaningOrder mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+        int orderId = resultSet.getInt("id");
+        int employeeId = resultSet.getInt("employee_id");
+        int roomId = resultSet.getInt("room_id");
+        LocalDateTime timeScheduled = resultSet.getTimestamp("time_scheduled").toLocalDateTime();
+        LocalDateTime timeFinished = null;
+        OrderStatus orderStatus = OrderStatus.valueOf(resultSet.getString("order_status"));
+
+        Timestamp timestampFinished = resultSet.getTimestamp("time_finished");
+        if (timestampFinished != null) {
+            timeFinished = timestampFinished.toLocalDateTime();
+        }
+        return new CleaningOrder(orderId, employeeId, roomId, timeScheduled, timeFinished, orderStatus);
     }
 }

@@ -166,9 +166,10 @@ public class CleaningOrder {
                 this.employeeId == that.getEmployeeId() &&
                 this.roomId == that.getRoomId() &&
                 this.timeScheduled.equals(that.getTimeScheduled()) &&
-                this.timeFinished.equals(that.getTimeFinished().orElse(null)) &&
+                Objects.equals(this.timeFinished, that.getTimeFinished().orElse(null)) &&
                 this.orderStatus.equals(that.getOrderStatus());
     }
+
 
     @Override
     public int hashCode() {

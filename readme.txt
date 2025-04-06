@@ -1,5 +1,0 @@
- - Integrationstest (IT)
- - Implementera Optionals för get-metoder
- - Strömlinjeforma Exceptions
- - Logger, Adapter, Factory
- - DAO-refaktorering

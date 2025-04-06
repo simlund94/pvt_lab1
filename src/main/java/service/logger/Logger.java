@@ -32,10 +32,10 @@ public interface Logger {
     void error(Throwable ex);
 
     /**
-     * The current implementation of Logger in use in the application.
+     * Factory method to provide the current implementation of Logger in use in the application.
      *
-     * @param clazz The class where the logger is situated, to provide
-     * @return
+     * @param clazz The class where the logger is situated, to provide context.
+     * @return A logger object.
      */
     static Logger get(Class<?> clazz) {
         return new Log4J(clazz);

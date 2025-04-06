@@ -20,6 +20,7 @@ public class Log4J implements Logger {
         this.logger = LogManager.getLogger(clazz.getName());
     }
 
+    @Override
     public void debug(Supplier<String> messageSupplier) {
         logger.debug(messageSupplier.get());
     }
